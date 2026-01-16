@@ -67,7 +67,7 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
   end
 
   def test_call_returns_skill_content
-    result = @tool.call({ "skill_name" => "valid-skill" })
+    result = @tool.call({"skill_name" => "valid-skill"})
 
     assert_includes result, "# Skill: valid-skill"
     assert_includes result, "# Valid Skill Instructions"
@@ -75,7 +75,7 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
   end
 
   def test_call_returns_error_for_unknown_skill
-    result = @tool.call({ "skill_name" => "nonexistent-skill" })
+    result = @tool.call({"skill_name" => "nonexistent-skill"})
 
     assert_includes result, "Skill 'nonexistent-skill' not found"
     assert_includes result, "Available skills:"
@@ -88,7 +88,7 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
   end
 
   def test_call_includes_scripts_section_when_present
-    result = @tool.call({ "skill_name" => "with-scripts" })
+    result = @tool.call({"skill_name" => "with-scripts"})
 
     assert_includes result, "## Available Scripts"
     assert_includes result, "helper.rb"
@@ -96,14 +96,14 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
   end
 
   def test_call_includes_references_section_when_present
-    result = @tool.call({ "skill_name" => "with-all-resources" })
+    result = @tool.call({"skill_name" => "with-all-resources"})
 
     assert_includes result, "## Available References"
     assert_includes result, "guide.md"
   end
 
   def test_call_includes_assets_section_when_present
-    result = @tool.call({ "skill_name" => "with-all-resources" })
+    result = @tool.call({"skill_name" => "with-all-resources"})
 
     assert_includes result, "## Available Assets"
     assert_includes result, "template.txt"
@@ -143,7 +143,7 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
     description = tool.description
     assert_includes description, "<name>db-skill</name>"
 
-    result = tool.call({ "skill_name" => "db-skill" })
+    result = tool.call({"skill_name" => "db-skill"})
     assert_includes result, "# Database Skill Content"
   end
 
@@ -155,7 +155,7 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
     description = tool.description
     assert_includes description, "valid-skill"
 
-    result = tool.call({ "skill_name" => "valid-skill" })
+    result = tool.call({"skill_name" => "valid-skill"})
     assert_includes result, "# Valid Skill Instructions"
   end
 
