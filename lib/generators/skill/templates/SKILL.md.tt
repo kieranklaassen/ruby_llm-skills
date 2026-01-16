@@ -1,0 +1,21 @@
+---
+name: <%= skill_name %>
+description: <%= skill_description %>
+<% if skill_license -%>
+license: <%= skill_license %>
+<% end -%>
+---
+
+# <%= skill_name.split("-").map(&:capitalize).join(" ") %>
+
+Instructions for using this skill.
+
+## When to Use
+
+Use this skill when...
+
+## Steps
+
+1. First step
+2. Second step
+3. Third step

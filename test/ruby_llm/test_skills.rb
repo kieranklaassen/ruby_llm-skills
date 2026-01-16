@@ -7,7 +7,7 @@ class RubyLlm::TestSkills < Minitest::Test
     refute_nil ::RubyLlm::Skills::VERSION
   end
 
-  def test_it_does_something_useful
-    assert false
+  def test_module_exists
+    assert defined?(RubyLlm::Skills)
   end
 end
