@@ -57,7 +57,10 @@ module RubyLlm
         <<~DESC.strip
           #{base_description}
 
-          Use this tool when the user's request matches one of the available skills.
+          When to use this tool:
+          - When the user's message starts with "/" followed by a skill name (e.g., "/write-poem"), invoke this tool with that command
+          - When the user's request matches one of the available skills below
+
           Call with just command to get the full skill instructions.
           Call with command and resource to load a specific file (script, reference, or asset).
 
