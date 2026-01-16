@@ -23,7 +23,7 @@ class RubyLlm::Skills::TestSkillToolIntegration < Minitest::Test
   def test_with_skills_from_path
     VCR.use_cassette("slash_command_arguments") do
       chat = RubyLLM.chat
-      chat.with_skills(from: @commands_path)
+      chat.with_skills(@commands_path)
 
       response = chat.ask("/write-poem about robots in space")
       assert response.content.length > 50
@@ -33,7 +33,7 @@ class RubyLlm::Skills::TestSkillToolIntegration < Minitest::Test
   def test_with_skills_from_array
     VCR.use_cassette("composite_loader") do
       chat = RubyLLM.chat
-      chat.with_skills(from: [@skills_path, @commands_path])
+      chat.with_skills(@skills_path, @commands_path)
 
       response = chat.ask("What skills and commands are available?")
       assert response.content.downcase.include?("valid-skill") ||
@@ -44,7 +44,7 @@ class RubyLlm::Skills::TestSkillToolIntegration < Minitest::Test
   def test_resource_loading
     VCR.use_cassette("resource_loading") do
       chat = RubyLLM.chat
-      chat.with_skills(from: @skills_path)
+      chat.with_skills(@skills_path)
 
       response = chat.ask("Load the with-scripts skill and show scripts/helper.rb")
       assert_includes response.content.downcase, "helper"
@@ -54,7 +54,7 @@ class RubyLlm::Skills::TestSkillToolIntegration < Minitest::Test
   def test_skill_discovery
     VCR.use_cassette("skill_discovery") do
       chat = RubyLLM.chat
-      chat.with_skills(from: @skills_path)
+      chat.with_skills(@skills_path)
 
       response = chat.ask("What skills are available?")
       assert_includes response.content.downcase, "valid-skill"
@@ -64,7 +64,7 @@ class RubyLlm::Skills::TestSkillToolIntegration < Minitest::Test
   def test_skills_with_other_tools
     VCR.use_cassette("skills_with_other_tools") do
       chat = RubyLLM.chat
-      chat.with_skills(from: @skills_path)
+      chat.with_skills(@skills_path)
       chat.with_tool(AdditionTool)
 
       response = chat.ask("What is 2 + 2? Also, what skills are available?")

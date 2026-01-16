@@ -10,14 +10,10 @@ module RubyLlm
     #   chat.with_skills
     #
     # @example Custom path
-    #   chat.with_skills(from: "lib/skills")
+    #   chat.with_skills("lib/skills")
     #
     # @example Multiple sources (auto-detected)
-    #   chat.with_skills(from: [
-    #     "app/skills",           # Directory
-    #     "extras/skills.zip",    # Zip file
-    #     current_user.skills     # ActiveRecord relation
-    #   ])
+    #   chat.with_skills("app/skills", "app/commands", user.skills)
     #
     # @example Filter skills
     #   chat.with_skills(only: [:pdf_report])
@@ -25,11 +21,11 @@ module RubyLlm
     module ChatExtensions
       # Add skills to this chat.
       #
-      # @param from [String, Array, nil] source(s) - auto-detects type
+      # @param sources [Array] skill sources - auto-detects type (directory, zip, collection)
       # @param only [Array<Symbol, String>, nil] include only these skills
       # @return [self] for chaining
-      def with_skills(from: nil, only: nil)
-        sources = Array(from || RubyLlm::Skills.default_path)
+      def with_skills(*sources, only: nil)
+        sources = [RubyLlm::Skills.default_path] if sources.empty?
         loaders = sources.map { |s| to_loader(s) }
 
         loader = loaders.length == 1 ? loaders.first : RubyLlm::Skills.compose(*loaders)
@@ -90,8 +86,8 @@ module RubyLlm
 
     # Extensions for ActiveRecord models using acts_as_chat.
     module ActiveRecordExtensions
-      def with_skills(from: nil, only: nil)
-        to_llm.with_skills(from: from, only: only)
+      def with_skills(*sources, only: nil)
+        to_llm.with_skills(*sources, only: only)
         self
       end
     end

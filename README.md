@@ -152,8 +152,8 @@ chat.with_skills("lib/skills")
 # Multiple paths
 chat.with_skills("app/skills", "app/commands")
 
-# With database skills
-chat.with_skills("app/skills", RubyLlm::Skills.from_database(user.skills))
+# With database skills (auto-detected)
+chat.with_skills("app/skills", user.skills)
 
 # Rails acts_as_chat models work the same way
 Chat.create!(model: "gpt-4").with_skills.ask("Help me")
