@@ -23,13 +23,15 @@ module RubyLlm
 
       # Initialize a skill from parsed metadata.
       #
-      # @param path [String] path to skill directory or virtual identifier
+      # @param path [String] path to skill directory, file, or virtual identifier
       # @param metadata [Hash] parsed YAML frontmatter
       # @param content [String, nil] pre-loaded content (optional)
-      def initialize(path:, metadata:, content: nil)
+      # @param virtual [Boolean] force virtual mode (no filesystem access)
+      def initialize(path:, metadata:, content: nil, virtual: false)
         @path = path.to_s
         @metadata = metadata || {}
         @content = content
+        @virtual = virtual
       end
 
       # @return [String] skill name from frontmatter
@@ -101,11 +103,11 @@ module RubyLlm
         !virtual?
       end
 
-      # Check if skill is a virtual/database skill.
+      # Check if skill is a virtual/database skill (no filesystem resources).
       #
-      # @return [Boolean] true if path is a virtual identifier
+      # @return [Boolean] true if skill has no filesystem resources
       def virtual?
-        @path.start_with?("database:")
+        @virtual || @path.start_with?("database:")
       end
 
       # Path to the SKILL.md file.
@@ -150,12 +152,25 @@ module RubyLlm
 
       def load_content
         return @metadata["__content__"] if @metadata["__content__"]
+
+        # For single-file skills, path is the .md file itself
+        if single_file?
+          return "" unless File.exist?(@path)
+          return Parser.extract_body(File.read(@path))
+        end
+
+        # For virtual skills (database), no filesystem content
         return "" if virtual?
 
+        # For directory skills, load from SKILL.md
         md_path = skill_md_path
         return "" unless md_path && File.exist?(md_path)
 
         Parser.extract_body(File.read(md_path))
+      end
+
+      def single_file?
+        @path.end_with?(".md") && File.file?(@path)
       end
 
       def list_resources(subdir)

@@ -118,4 +118,50 @@ class RubyLlm::Skills::TestFilesystemLoader < Minitest::Test
     assert_equal 1, skill.references.length
     assert_equal 1, skill.assets.length
   end
+
+  # Single-file command tests
+
+  def test_loads_single_file_commands
+    commands_path = File.join(fixtures_path, "commands")
+    loader = RubyLlm::Skills::FilesystemLoader.new(commands_path)
+
+    skills = loader.list
+    assert skills.any? { |s| s.name == "write-poem" }
+  end
+
+  def test_single_file_command_has_metadata
+    commands_path = File.join(fixtures_path, "commands")
+    loader = RubyLlm::Skills::FilesystemLoader.new(commands_path)
+
+    skill = loader.find("write-poem")
+    assert_equal "write-poem", skill.name
+    assert_includes skill.description, "Write a poem"
+  end
+
+  def test_single_file_command_has_content
+    commands_path = File.join(fixtures_path, "commands")
+    loader = RubyLlm::Skills::FilesystemLoader.new(commands_path)
+
+    skill = loader.find("write-poem")
+    assert_includes skill.content, "# Write a Poem"
+    assert_includes skill.content, "Use vivid imagery"
+  end
+
+  def test_single_file_command_is_virtual
+    commands_path = File.join(fixtures_path, "commands")
+    loader = RubyLlm::Skills::FilesystemLoader.new(commands_path)
+
+    skill = loader.find("write-poem")
+    assert skill.virtual?
+  end
+
+  def test_single_file_command_has_no_resources
+    commands_path = File.join(fixtures_path, "commands")
+    loader = RubyLlm::Skills::FilesystemLoader.new(commands_path)
+
+    skill = loader.find("write-poem")
+    assert_empty skill.scripts
+    assert_empty skill.references
+    assert_empty skill.assets
+  end
 end

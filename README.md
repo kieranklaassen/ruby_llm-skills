@@ -202,7 +202,8 @@ tool = RubyLlm::Skills::SkillTool.new(loader)
 tool.name                   # "skill"
 tool.description            # Dynamic description with <available_skills>
 tool.parameters             # JSON Schema for parameters
-tool.call({ "skill_name" => "x" })  # Load and return skill content
+tool.call({ "command" => "pdf" })   # Load skill instructions
+tool.call({ "command" => "pdf", "resource" => "scripts/helper.rb" })  # Load resource
 tool.to_tool_definition     # Hash for RubyLLM integration
 ```
 
@@ -224,6 +225,70 @@ rake skills:list              # List all skills
 rake skills:validate          # Validate all skills
 rake skills:show[skill-name]  # Show skill details
 ```
+
+## Slash Commands
+
+Skills can also be used as slash commands. In Claude Code, [skills and slash commands are unified](https://github.com/anthropics/claude-code/issues/17578) - both use the same Skill tool.
+
+### Creating a Command
+
+Commands are single-file skills in `app/commands/`:
+
+```
+app/commands/
+├── write-poem.md
+├── review-code.md
+└── generate-tests.md
+```
+
+Each command is a markdown file with frontmatter:
+
+```markdown
+---
+name: write-poem
+description: Write a poem on any topic. Use when asked to write poetry or verses.
+---
+
+# Write a Poem
+
+Write a creative poem based on the user's request.
+
+## Guidelines
+
+- Use vivid imagery
+- Match the requested style (haiku, sonnet, free verse)
+- Include a title
+```
+
+### Loading Commands
+
+```ruby
+# Load commands alongside skills
+loader = RubyLlm::Skills.compose(
+  RubyLlm::Skills.from_directory("app/skills"),
+  RubyLlm::Skills.from_directory("app/commands")
+)
+
+skill_tool = RubyLlm::Skills::SkillTool.new(loader)
+```
+
+### Invoking Commands
+
+In your application, detect the `/` prefix and invoke the skill:
+
+```ruby
+def handle_message(message)
+  if message.start_with?("/")
+    command_name = message[1..].split.first  # "/write-poem topic" -> "write-poem"
+    result = skill_tool.execute(command: command_name)
+    # Feed result to LLM as context
+  else
+    # Normal chat flow
+  end
+end
+```
+
+The LLM receives the command instructions and follows them.
 
 ## Creating Skills
 

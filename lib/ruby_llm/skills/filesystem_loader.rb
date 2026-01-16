@@ -4,12 +4,18 @@ module RubyLlm
   module Skills
     # Loads skills from a filesystem directory.
     #
-    # Scans a directory for subdirectories containing SKILL.md files.
-    # Each subdirectory is treated as a skill if it contains a valid SKILL.md.
+    # Supports two formats:
+    # 1. Directory skills: subdirectories containing SKILL.md files
+    # 2. Single-file commands: .md files with frontmatter at the root level
     #
-    # @example
-    #   loader = FilesystemLoader.new("app/skills")
-    #   loader.list # => [Skill, Skill, ...]
+    # @example Directory skills
+    #   app/skills/
+    #   └── pdf-report/
+    #       └── SKILL.md
+    #
+    # @example Single-file commands
+    #   app/commands/
+    #   └── write-poem.md
     #
     class FilesystemLoader < Loader
       attr_reader :path
@@ -34,21 +40,48 @@ module RubyLlm
       def load_all
         return [] unless File.directory?(@path)
 
-        Dir.glob(File.join(@path, "*", "SKILL.md")).filter_map do |skill_md_path|
-          load_skill(skill_md_path)
-        rescue ParseError => e
-          warn "Warning: Failed to parse #{skill_md_path}: #{e.message}" if RubyLlm::Skills.logger
-          nil
-        end
+        directory_skills + single_file_skills
       end
 
       private
 
-      def load_skill(skill_md_path)
+      # Load skills from subdirectories containing SKILL.md
+      def directory_skills
+        Dir.glob(File.join(@path, "*", "SKILL.md")).filter_map do |skill_md_path|
+          load_directory_skill(skill_md_path)
+        rescue ParseError => e
+          log_warning("Failed to parse #{skill_md_path}: #{e.message}")
+          nil
+        end
+      end
+
+      # Load single-file .md commands from root level
+      def single_file_skills
+        Dir.glob(File.join(@path, "*.md")).filter_map do |md_path|
+          load_single_file_skill(md_path)
+        rescue ParseError => e
+          log_warning("Failed to parse #{md_path}: #{e.message}")
+          nil
+        end
+      end
+
+      def load_directory_skill(skill_md_path)
         skill_dir = File.dirname(skill_md_path)
         metadata = Parser.parse_file(skill_md_path)
 
         Skill.new(path: skill_dir, metadata: metadata)
+      end
+
+      def load_single_file_skill(md_path)
+        metadata = Parser.parse_file(md_path)
+
+        # For single-file skills, the path is the file itself
+        # They are virtual in that they have no resources
+        Skill.new(path: md_path, metadata: metadata, virtual: true)
+      end
+
+      def log_warning(message)
+        RubyLlm::Skills.logger&.warn("Warning: #{message}")
       end
     end
   end
