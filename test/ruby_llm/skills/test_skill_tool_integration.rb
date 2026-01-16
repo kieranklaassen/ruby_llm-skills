@@ -38,7 +38,7 @@ class RubyLlm::Skills::TestSkillToolIntegration < Minitest::Test
 
       response = chat.ask("What skills and commands are available?")
       assert response.content.downcase.include?("valid-skill") ||
-             response.content.downcase.include?("write-poem")
+        response.content.downcase.include?("write-poem")
     end
   end
 
@@ -70,7 +70,7 @@ class RubyLlm::Skills::TestSkillToolIntegration < Minitest::Test
 
       response = chat.ask("What is 2 + 2? Also, what skills are available?")
       assert response.content.include?("4") ||
-             response.content.downcase.include?("valid-skill")
+        response.content.downcase.include?("valid-skill")
     end
   end
 

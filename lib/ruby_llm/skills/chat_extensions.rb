@@ -28,7 +28,7 @@ module RubyLlm
         sources = [RubyLlm::Skills.default_path] if sources.empty?
         loaders = sources.map { |s| to_loader(s) }
 
-        loader = loaders.length == 1 ? loaders.first : RubyLlm::Skills.compose(*loaders)
+        loader = (loaders.length == 1) ? loaders.first : RubyLlm::Skills.compose(*loaders)
         loader = FilteredLoader.new(loader, only) if only
 
         skill_tool = RubyLlm::Skills::SkillTool.new(loader)
@@ -41,7 +41,7 @@ module RubyLlm
         case source
         when String
           RubyLlm::Skills.from_directory(source)
-        when ->(s) { s.respond_to?(:to_a) && s.first&.respond_to?(:name) && s.first&.respond_to?(:content) }
+        when ->(s) { s.respond_to?(:to_a) && s.first&.respond_to?(:name) && s.first.respond_to?(:content) }
           RubyLlm::Skills.from_database(source)
         else
           source
