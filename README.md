@@ -24,20 +24,12 @@ gem "rubyzip"
 ## Quick Start
 
 ```ruby
-require "ruby_llm/skills"
-require "ruby_llm/skills/skill_tool"
-
-# Create a skill loader and tool
-loader = RubyLlm::Skills.from_directory("app/skills")
-skill_tool = RubyLlm::Skills::SkillTool.new(loader)
-
-# Add to your RubyLLM chat
-chat = RubyLlm.chat
-chat.with_tool(skill_tool)
-chat.ask("Create a PDF report from this data")
+chat = RubyLLM.chat
+chat.with_skills              # Load skills from app/skills
+chat.ask "Create a PDF report from this data"
 ```
 
-The LLM sees available skills in the tool description, calls the tool when needed, and gets the full instructions.
+The LLM sees available skills, calls the skill tool when needed, and gets the full instructions.
 
 ## How It Works
 
@@ -147,6 +139,25 @@ When the LLM calls the skill tool with a skill name, it receives the full SKILL.
 ```
 
 ## API Reference
+
+### Chat Integration
+
+```ruby
+# Default path (app/skills)
+chat.with_skills
+
+# Single path
+chat.with_skills("lib/skills")
+
+# Multiple paths
+chat.with_skills("app/skills", "app/commands")
+
+# With database skills
+chat.with_skills("app/skills", RubyLlm::Skills.from_database(user.skills))
+
+# Rails acts_as_chat models work the same way
+Chat.create!(model: "gpt-4").with_skills.ask("Help me")
+```
 
 ### RubyLlm::Skills Module
 
@@ -264,12 +275,7 @@ Write a creative poem based on the user's request.
 
 ```ruby
 # Load commands alongside skills
-loader = RubyLlm::Skills.compose(
-  RubyLlm::Skills.from_directory("app/skills"),
-  RubyLlm::Skills.from_directory("app/commands")
-)
-
-skill_tool = RubyLlm::Skills::SkillTool.new(loader)
+chat.with_skills("app/skills", "app/commands")
 ```
 
 ### Invoking Commands

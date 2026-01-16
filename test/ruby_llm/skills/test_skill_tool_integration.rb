@@ -85,10 +85,9 @@ class RubyLlm::Skills::TestSkillToolIntegration < Minitest::Test
         RubyLlm::Skills.from_directory(@skills_path),
         RubyLlm::Skills.from_directory(@commands_path)
       )
-      skill_tool = RubyLlm::Skills::SkillTool.new(loader)
 
       chat = RubyLLM.chat
-      chat.with_tool(skill_tool)
+      chat.with_skills(loader)  # Pass loader directly
 
       response = chat.ask("What skills and commands are available?")
 
