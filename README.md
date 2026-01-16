@@ -5,7 +5,7 @@ Agent Skills for [RubyLLM](https://github.com/crmne/ruby_llm). Teach your AI how
 Skills are folders of instructions, scripts, and resources that extend LLM capabilities for specialized tasks. This gem implements the [Agent Skills specification](https://agentskills.io/specification) for RubyLLM.
 
 [![Gem Version](https://badge.fury.io/rb/ruby_llm-skills.svg)](https://badge.fury.io/rb/ruby_llm-skills)
-[![Build Status](https://github.com/patvice/ruby_llm-skills/actions/workflows/build.yml/badge.svg)](https://github.com/patvice/ruby_llm-skills/actions)
+[![CI](https://github.com/kieranklaassen/ruby_llm-skills/actions/workflows/ci.yml/badge.svg)](https://github.com/kieranklaassen/ruby_llm-skills/actions)
 
 ## Installation
 
@@ -370,7 +370,7 @@ description: PDF helper.
 ## Development
 
 ```bash
-git clone https://github.com/patvice/ruby_llm-skills.git
+git clone https://github.com/kieranklaassen/ruby_llm-skills.git
 cd ruby_llm-skills
 bundle install
 bundle exec rake test

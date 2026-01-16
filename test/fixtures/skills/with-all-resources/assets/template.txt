@@ -1,0 +1,1 @@
+Template content for testing asset loading.
