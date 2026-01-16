@@ -47,20 +47,6 @@ module RubyLlm
         Skill.new(path: path, metadata: metadata)
       end
 
-      # Load skills from a zip archive.
-      #
-      # @param path [String] path to .zip file
-      # @return [ZipLoader] loader for the archive
-      # @raise [LoadError] if rubyzip not available
-      # @example
-      #   RubyLlm::Skills.from_zip("skills.zip")
-      def from_zip(path)
-        require_relative "skills/zip_loader"
-        ZipLoader.new(path)
-      rescue ::LoadError
-        raise LoadError, "rubyzip gem required for zip support. Add 'gem \"rubyzip\"' to your Gemfile."
-      end
-
       # Load skills from database records.
       #
       # @param records [ActiveRecord::Relation, Array] collection of skill records

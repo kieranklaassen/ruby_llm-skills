@@ -15,12 +15,6 @@ Add this line to your application's Gemfile:
 gem "ruby_llm-skills"
 ```
 
-For zip file support, also add:
-
-```ruby
-gem "rubyzip"
-```
-
 ## Quick Start
 
 ```ruby
@@ -62,14 +56,6 @@ loader = RubyLlm::Skills.from_directory("lib/skills")
 # Load a single skill
 skill = RubyLlm::Skills.load("app/skills/pdf-report")
 ```
-
-### From Zip Files
-
-```ruby
-loader = RubyLlm::Skills.from_zip("skills.zip")
-```
-
-Requires `rubyzip` gem.
 
 ### From Database
 
@@ -166,7 +152,6 @@ RubyLlm::Skills.default_path              # Get/set default skills directory
 RubyLlm::Skills.logger                    # Get/set logger
 
 RubyLlm::Skills.from_directory(path)      # Create FilesystemLoader
-RubyLlm::Skills.from_zip(path)            # Create ZipLoader
 RubyLlm::Skills.from_database(records)    # Create DatabaseLoader
 RubyLlm::Skills.compose(*loaders)         # Create CompositeLoader
 RubyLlm::Skills.load(path)                # Load single skill from directory

@@ -6,6 +6,7 @@ class RubyLlm::Skills::TestSkillToolIntegration < Minitest::Test
   def setup
     @skills_path = File.join(fixtures_path, "skills")
     @commands_path = File.join(fixtures_path, "commands")
+    @zip_path = File.join(fixtures_path, "skills.zip")
   end
 
   def test_with_skills_default

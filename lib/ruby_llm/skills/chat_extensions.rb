@@ -40,11 +40,7 @@ module RubyLlm
       def to_loader(source)
         case source
         when String
-          if source.end_with?(".zip")
-            RubyLlm::Skills.from_zip(source)
-          else
-            RubyLlm::Skills.from_directory(source)
-          end
+          RubyLlm::Skills.from_directory(source)
         when ->(s) { s.respond_to?(:to_a) && s.first&.respond_to?(:name) && s.first&.respond_to?(:content) }
           RubyLlm::Skills.from_database(source)
         else
