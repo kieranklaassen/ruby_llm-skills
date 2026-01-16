@@ -238,7 +238,7 @@ app/skills/
 
 The `SKILL.md` requires YAML frontmatter:
 
-```yaml
+````markdown
 ---
 name: pdf-report
 description: Generate PDF reports with charts and tables. Use when asked to create reports, export data to PDF, or generate printable documents.
@@ -258,7 +258,7 @@ ruby scripts/generate.rb --input data.json --output report.pdf
 
 - Always include page numbers
 - Use company logo from assets/
-```
+````
 
 ### Frontmatter Fields
 
