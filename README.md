@@ -15,281 +15,212 @@ Add this line to your application's Gemfile:
 gem "ruby_llm-skills"
 ```
 
+For zip file support, also add:
+
+```ruby
+gem "rubyzip"
+```
+
 ## Quick Start
 
 ```ruby
-chat = RubyLLM.chat
-chat.with_skills              # Load skills from app/skills
-chat.ask "Create a PDF report from this data"
+require "ruby_llm/skills"
+
+# Create a skill loader and tool
+loader = RubyLlm::Skills.from_directory("app/skills")
+skill_tool = RubyLlm::Skills::SkillTool.new(loader)
+
+# Add to your RubyLLM chat
+chat = RubyLlm.chat
+chat.with_tool(skill_tool)
+chat.ask("Create a PDF report from this data")
 ```
 
-That's it. Skills are discovered automatically and injected into the system prompt.
+The LLM sees available skills in the tool description, calls the tool when needed, and gets the full instructions.
 
 ## How It Works
 
 Skills follow a three-level progressive disclosure pattern:
 
-1. **Metadata** - Name and description loaded at startup (~100 tokens per skill)
-2. **Instructions** - Full SKILL.md loaded when skill triggers
-3. **Resources** - Scripts and references loaded on demand
+1. **Metadata** - Name and description embedded in tool description (~100 tokens per skill)
+2. **Instructions** - Full SKILL.md returned when skill tool is called
+3. **Resources** - Scripts and references listed for on-demand loading
 
 This keeps context lean while making capabilities available.
 
 ## Configuration
 
 ```ruby
-RubyLLM::Skills.default_path = "lib/skills"   # Default: app/skills
-RubyLLM::Skills.logger = Rails.logger         # Default: nil
+RubyLlm::Skills.default_path = "lib/skills"   # Default: app/skills
+RubyLlm::Skills.logger = Rails.logger         # Default: nil
 ```
 
 ## Loading Skills
 
-### From Filesystem (Default)
+### From Filesystem
 
 ```ruby
-# Load from default path (app/skills)
-chat.with_skills
+# Load from default path
+loader = RubyLlm::Skills.from_directory
 
 # Load from specific directory
-chat.with_skills(from: "lib/skills")
+loader = RubyLlm::Skills.from_directory("lib/skills")
 
-# Load specific skills only
-chat.with_skills(only: [:pdf_report, :data_analysis])
+# Load a single skill
+skill = RubyLlm::Skills.load("app/skills/pdf-report")
 ```
-
-### From Multiple Sources
-
-Pass an array to load from multiple locations:
-
-```ruby
-chat.with_skills(from: [
-  "app/skills",                # Directory
-  "extras/skills.zip",         # Zip file
-  current_user.skills          # ActiveRecord relation
-])
-```
-
-Sources are loaded in order. Later skills with the same name override earlier ones.
-
-### From Database
-
-Store complete skills in your database for per-user customization. Two storage formats are supported:
-
-**Option A: Store as text (SKILL.md content)**
-
-```ruby
-# Migration
-create_table :skills do |t|
-  t.string :name, null: false
-  t.text :description, null: false
-  t.text :content, null: false  # Full SKILL.md content
-  t.references :user
-  t.timestamps
-end
-
-# Model
-class Skill < ApplicationRecord
-  belongs_to :user, optional: true
-
-  validates :name, format: { with: /\A[a-z0-9-]+\z/ }
-end
-
-# Create a skill
-current_user.skills.create!(
-  name: "my-workflow",
-  description: "Custom workflow for data processing",
-  content: <<~SKILL
-    # My Workflow
-
-    ## Steps
-    1. Load the data
-    2. Process with custom rules
-    3. Export results
-  SKILL
-)
-```
-
-**Option B: Store as binary (zip file)**
-
-For skills with scripts, references, or assets:
-
-```ruby
-# Migration
-create_table :skills do |t|
-  t.string :name, null: false
-  t.text :description, null: false
-  t.binary :data, null: false  # Zip file blob
-  t.references :user
-  t.timestamps
-end
-
-# Model
-class Skill < ApplicationRecord
-  belongs_to :user, optional: true
-end
-
-# Upload a skill zip
-skill_zip = File.read("my-skill.zip")
-current_user.skills.create!(
-  name: "pdf-report",
-  description: "Generate PDF reports with charts",
-  data: skill_zip
-)
-```
-
-**Loading database skills**
-
-```ruby
-# Combine app skills with user's custom skills
-chat.with_skills(from: [
-  "app/skills",           # Base skills from filesystem
-  current_user.skills     # User's skills from database
-])
-```
-
-The gem detects the storage format automatically:
-- Records with `content` field → parsed as SKILL.md text
-- Records with `data` field → extracted as zip
 
 ### From Zip Files
 
 ```ruby
-chat.with_skills(from: "skills.zip")
-chat.with_skills(from: ["core.zip", "custom.zip"])
+loader = RubyLlm::Skills.from_zip("skills.zip")
 ```
 
-### Source Detection
+Requires `rubyzip` gem.
 
-The gem auto-detects source type:
+### From Database
 
-| Input | Type |
-|-------|------|
-| String ending in `/` or directory path | Filesystem |
-| String ending in `.zip` | Zip file |
-| ActiveRecord relation or array of objects | Database |
-
-## Rails Integration
-
-Skills load automatically via Railtie. No configuration needed.
+Store skills in your database for per-user customization:
 
 ```ruby
-# app/skills/ is scanned at boot
-# Skills available on any RubyLLM chat
-
-class ReportsController < ApplicationController
-  def create
-    chat = RubyLLM.chat
-    chat.with_skills  # Already has app/skills loaded
-    chat.ask "Generate quarterly report from #{@data}"
-  end
+# Migration
+create_table :skills do |t|
+  t.string :name, null: false
+  t.text :description, null: false
+  t.text :content, null: false  # SKILL.md body content
+  t.references :user
+  t.timestamps
 end
+
+# Load from ActiveRecord
+loader = RubyLlm::Skills.from_database(current_user.skills)
 ```
 
-### Per-User Skills with ActiveRecord
+Records must respond to `#name`, `#description`, and `#content`.
+
+### Combining Sources
 
 ```ruby
-class User < ApplicationRecord
-  has_many :skills
-end
+# Compose multiple loaders
+loader = RubyLlm::Skills.compose(
+  RubyLlm::Skills.from_directory("app/skills"),
+  RubyLlm::Skills.from_database(current_user.skills)
+)
 
-class Skill < ApplicationRecord
-  belongs_to :user, optional: true
-
-  validates :name, presence: true,
-    format: { with: /\A[a-z0-9-]+\z/ },
-    length: { maximum: 64 }
-  validates :description, presence: true,
-    length: { maximum: 1024 }
-  validates :content, presence: true
-end
+# Earlier loaders take precedence for duplicate names
+skill_tool = RubyLlm::Skills::SkillTool.new(loader)
 ```
 
 ## Skill Discovery
 
-Skills are injected into the system prompt as available tools:
+The SkillTool embeds skill metadata in its description:
 
 ```xml
 <available_skills>
-<skill>
-  <name>pdf-report</name>
-  <description>Generate PDF reports with charts...</description>
-  <location>app/skills/pdf-report</location>
-</skill>
+  <skill>
+    <name>pdf-report</name>
+    <description>Generate PDF reports with charts...</description>
+  </skill>
+  <skill>
+    <name>data-analysis</name>
+    <description>Analyze datasets and create visualizations...</description>
+  </skill>
 </available_skills>
 ```
 
-When the LLM determines a skill is relevant, it reads the full `SKILL.md` into context.
+When the LLM calls the skill tool with a skill name, it receives the full SKILL.md content:
+
+```
+# Skill: pdf-report
+
+# PDF Report Generator
+
+## Quick Start
+...
+
+## Available Scripts
+- generate.rb
+
+## Available References
+- templates.md
+```
 
 ## API Reference
 
-### RubyLLM::Skills
+### RubyLlm::Skills Module
 
 ```ruby
-RubyLLM::Skills.default_path      # Get/set default skills directory
-RubyLLM::Skills.logger            # Get/set logger
-RubyLLM::Skills.load(from:)       # Load skills from path/database/zip
-RubyLLM::Skills.validate(skill)   # Validate skill structure
+RubyLlm::Skills.default_path              # Get/set default skills directory
+RubyLlm::Skills.logger                    # Get/set logger
+
+RubyLlm::Skills.from_directory(path)      # Create FilesystemLoader
+RubyLlm::Skills.from_zip(path)            # Create ZipLoader
+RubyLlm::Skills.from_database(records)    # Create DatabaseLoader
+RubyLlm::Skills.compose(*loaders)         # Create CompositeLoader
+RubyLlm::Skills.load(path)                # Load single skill from directory
 ```
 
-### RubyLLM::Skills::Skill
+### Loaders
 
 ```ruby
-skill = RubyLLM::Skills.find("pdf-report")
-
-skill.name                    # "pdf-report"
-skill.description             # "Generate PDF reports..."
-skill.content                 # Full SKILL.md content
-skill.path                    # Filesystem path
-skill.metadata                # Parsed frontmatter hash
-skill.references              # Array of reference files
-skill.scripts                 # Array of script files
-skill.assets                  # Array of asset files
-skill.valid?                  # Validates structure
+loader.list                 # Array of all skills
+loader.find("name")         # Find skill by name (nil if not found)
+loader.get("name")          # Get skill by name (raises NotFoundError)
+loader.exists?("name")      # Check if skill exists
+loader.reload!              # Clear cached skills
 ```
 
-### Chat Integration
+### RubyLlm::Skills::Skill
 
 ```ruby
-chat = RubyLLM.chat
+skill.name                  # "pdf-report"
+skill.description           # "Generate PDF reports..."
+skill.content               # Full SKILL.md body (lazy loaded)
+skill.license               # Optional license
+skill.compatibility         # Optional compatibility info
+skill.custom_metadata       # Custom key-value pairs from frontmatter
+skill.allowed_tools         # Array of allowed tools (experimental)
 
-chat.with_skills                    # Load default skills
-chat.with_skills(only: [:name])     # Load specific skills
-chat.with_skills(except: [:name])   # Exclude skills
-chat.with_skills(from: records)     # Load from database
-chat.skills                         # List loaded skills
-chat.skill_metadata                 # Get metadata for prompt
+skill.scripts               # Array of script file paths
+skill.references            # Array of reference file paths
+skill.assets                # Array of asset file paths
+
+skill.path                  # Skill directory path
+skill.valid?                # Validates against spec
+skill.errors                # Array of validation errors
+skill.virtual?              # True for database skills
 ```
 
-## Validation
-
-Validate skills match the specification:
+### RubyLlm::Skills::SkillTool
 
 ```ruby
-skill = RubyLLM::Skills.find("my-skill")
-skill.valid?  # => true/false
-skill.errors  # => ["name contains uppercase"]
+tool = RubyLlm::Skills::SkillTool.new(loader)
 
-# Validate all skills
-RubyLLM::Skills.validate_all
-# => { valid: [...], invalid: [...] }
+tool.name                   # "skill"
+tool.description            # Dynamic description with <available_skills>
+tool.parameters             # JSON Schema for parameters
+tool.call(skill_name: "x")  # Load and return skill content
+tool.to_tool_definition     # Hash for RubyLLM integration
 ```
 
-## Provider Support
+## Rails Integration
 
-Skills work with any RubyLLM provider. The skill metadata is injected into the system prompt, so any model that supports system prompts can use skills.
+Skills auto-configure via Railtie. The default path is set to `Rails.root/app/skills`.
 
-Tested with: OpenAI, Anthropic, Google Gemini, AWS Bedrock, Ollama.
+### Generator
 
-## Comparison with MCP
+```bash
+rails generate skill pdf-report --description "Generate PDF reports"
+rails generate skill my-skill --scripts --references --assets
+```
 
-| Feature | Skills | MCP |
-|---------|--------|-----|
-| Execution | Prompt-based | Tool-based |
-| Setup | Drop in folder | Server config |
-| Context | Progressive disclosure | Always available |
-| Best for | Domain knowledge | External integrations |
+### Rake Tasks
 
-Use skills for specialized instructions. Use [ruby_llm-mcp](https://github.com/patvice/ruby_llm-mcp) for external tool integrations. They compose well together.
+```bash
+rake skills:list              # List all skills
+rake skills:validate          # Validate all skills
+rake skills:show[skill-name]  # Show skill details
+```
 
 ## Creating Skills
 
@@ -338,6 +269,7 @@ ruby scripts/generate.rb --input data.json --output report.pdf
 | `license` | No | License identifier |
 | `compatibility` | No | Environment requirements |
 | `metadata` | No | Custom key-value pairs |
+| `allowed-tools` | No | Space-separated tool names (experimental) |
 
 ### Skill Directories
 
@@ -348,6 +280,14 @@ skill-name/
 ├── references/        # Optional - additional docs
 └── assets/            # Optional - templates, images
 ```
+
+### Name Rules
+
+- Max 64 characters
+- Lowercase letters, numbers, and hyphens only
+- No leading/trailing hyphens
+- No consecutive hyphens
+- Must match parent directory name
 
 ### Best Practices
 
@@ -363,9 +303,21 @@ description: Extract text and tables from PDF files. Use when working with PDFs,
 description: PDF helper.
 ```
 
-**Use scripts for deterministic operations.** Scripts execute without loading into context.
+**Use scripts for deterministic operations.** Scripts are listed but not loaded into context.
 
-**One level of references.** Avoid deeply nested file chains.
+## Validation
+
+```ruby
+skill = loader.find("my-skill")
+skill.valid?  # => true/false
+skill.errors  # => ["name contains uppercase", ...]
+```
+
+Validation rules follow the [Agent Skills specification](https://agentskills.io/specification).
+
+## Provider Support
+
+Skills work with any RubyLLM provider. The skill metadata is injected into the tool description, so any model that supports tool use can discover and load skills.
 
 ## Development
 
@@ -386,11 +338,10 @@ bundle exec rake test
 
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
+MIT License. See [LICENSE](LICENSE.txt) for details.
 
 ## Resources
 
 - [Agent Skills Specification](https://agentskills.io/specification)
 - [Anthropic Skills Repository](https://github.com/anthropics/skills)
 - [RubyLLM](https://github.com/crmne/ruby_llm)
-- [RubyLLM::MCP](https://github.com/patvice/ruby_llm-mcp)
