@@ -1,0 +1,29 @@
+Description:
+    Creates a new Agent Skill following the agentskills.io specification.
+    Skills are stored in app/skills/ and contain a SKILL.md file with
+    YAML frontmatter (name, description) and markdown instructions.
+
+Example:
+    rails generate skill pdf-report --description "Generate PDF reports"
+
+    This creates:
+        app/skills/pdf-report/
+        app/skills/pdf-report/SKILL.md
+
+    With optional directories:
+        --scripts     Creates scripts/ directory for executable code
+        --references  Creates references/ directory for documentation
+        --assets      Creates assets/ directory for templates/images
+
+Full Example:
+    rails generate skill data-export -d "Export data to CSV/JSON. Use when asked to export or download data." --scripts --assets
+
+    This creates:
+        app/skills/data-export/
+        app/skills/data-export/SKILL.md
+        app/skills/data-export/scripts/.keep
+        app/skills/data-export/assets/.keep
+
+Note:
+    The description should include both what the skill does AND when to use it.
+    Example: "Generate PDF reports from data. Use when asked to create reports or export to PDF."

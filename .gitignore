@@ -7,6 +7,11 @@
 /spec/reports/
 /tmp/
 
+# Dummy app generated files
+/test/dummy/log/*.log
+/test/dummy/tmp/
+/test/dummy/storage/*.sqlite3
+
 # Environment variables
 .env
 .env.local

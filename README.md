@@ -96,6 +96,37 @@ Default path auto-configured to `Rails.root/app/skills`.
 rails generate skill pdf-report --description "Generate PDF reports"
 ```
 
+## Development
+
+### Setup
+
+```bash
+bin/setup
+```
+
+### Running Tests
+
+```bash
+bundle exec rake test        # Unit tests (151 tests)
+bundle exec rake test_rails  # Rails integration tests (25+ tests)
+bundle exec rake test_all    # Both
+bundle exec rake             # Tests + linting
+```
+
+### Dummy Rails App
+
+A minimal Rails 8 app at `test/dummy/` tests Rails integration:
+
+- **Filesystem skills**: `app/skills/greeting/` tests directory-based loading
+- **Database skills**: `Skill` model tests ActiveRecord-based loading
+- **Generator tests**: Tests for `rails generate skill`
+- **Composite loading**: Tests combining filesystem + database sources
+
+```bash
+cd test/dummy
+bundle exec rails test  # Run Rails tests directly
+```
+
 ## Resources
 
 - [Agent Skills Specification](https://agentskills.io/specification)

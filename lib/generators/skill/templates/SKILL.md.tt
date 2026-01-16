@@ -6,16 +6,52 @@ license: <%= skill_license %>
 <% end -%>
 ---
 
-# <%= skill_name.split("-").map(&:capitalize).join(" ") %>
+# <%= skill_title %>
 
-Instructions for using this skill.
+<%= skill_description %>
 
 ## When to Use
 
-Use this skill when...
+Use this skill when:
 
-## Steps
+- [Trigger condition 1 - be specific about keywords/phrases]
+- [Trigger condition 2]
 
-1. First step
-2. Second step
-3. Third step
+## Instructions
+
+### Step 1: [Action]
+
+[Clear instruction with expected outcome]
+
+### Step 2: [Action]
+
+[Clear instruction with expected outcome]
+
+### Step 3: [Action]
+
+[Clear instruction with expected outcome]
+
+## Examples
+
+### Example 1: [Scenario]
+
+**Input:**
+```
+[Example input or command]
+```
+
+**Output:**
+```
+[Expected result]
+```
+
+## Edge Cases
+
+- **[Scenario]**: [How to handle it]
+- **[Error condition]**: [Recovery steps]
+
+## Notes
+
+- Keep this file under 500 lines for optimal token usage
+- Move detailed documentation to `references/` directory
+- Move executable code to `scripts/` directory

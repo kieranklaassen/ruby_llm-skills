@@ -5,11 +5,16 @@ require "rails/generators"
 class SkillGenerator < Rails::Generators::NamedBase
   source_root File.expand_path("templates", __dir__)
 
-  class_option :description, type: :string, default: "Description of what this skill does"
-  class_option :license, type: :string, default: nil
-  class_option :scripts, type: :boolean, default: false
-  class_option :references, type: :boolean, default: false
-  class_option :assets, type: :boolean, default: false
+  class_option :description, type: :string, default: "Description of what this skill does. Use when...",
+    aliases: "-d", desc: "Short description of the skill (max 1024 chars)"
+  class_option :license, type: :string, default: nil,
+    aliases: "-l", desc: "License identifier (e.g., MIT, Apache-2.0)"
+  class_option :scripts, type: :boolean, default: false,
+    desc: "Create scripts/ directory for executable code"
+  class_option :references, type: :boolean, default: false,
+    desc: "Create references/ directory for documentation"
+  class_option :assets, type: :boolean, default: false,
+    desc: "Create assets/ directory for templates/images"
 
   def create_skill_directory
     empty_directory skill_path
@@ -56,5 +61,9 @@ class SkillGenerator < Rails::Generators::NamedBase
 
   def skill_license
     options[:license]
+  end
+
+  def skill_title
+    skill_name.split("-").map(&:capitalize).join(" ")
   end
 end
