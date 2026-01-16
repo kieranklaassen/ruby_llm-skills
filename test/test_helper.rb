@@ -5,16 +5,18 @@ require "ruby_llm/skills"
 
 require "minitest/autorun"
 
-module FixturesHelper
-  def fixtures_path
-    File.expand_path("fixtures", __dir__)
+unless defined?(FixturesHelper)
+  module FixturesHelper
+    def fixtures_path
+      File.expand_path("fixtures", __dir__)
+    end
+
+    def skill_fixture_path(name)
+      File.join(fixtures_path, "skills", name)
+    end
   end
 
-  def skill_fixture_path(name)
-    File.join(fixtures_path, "skills", name)
+  class Minitest::Test
+    include FixturesHelper
   end
-end
-
-class Minitest::Test
-  include FixturesHelper
 end

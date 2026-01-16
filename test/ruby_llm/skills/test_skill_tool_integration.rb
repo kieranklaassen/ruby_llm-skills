@@ -79,15 +79,16 @@ class RubyLlm::Skills::TestSkillToolIntegration < Minitest::Test
   end
 
   # Test 6: Composite loader with multiple sources
-  def test_with_skill_loader_composite
+  def test_composite_loader
     VCR.use_cassette("composite_loader") do
       loader = RubyLlm::Skills.compose(
         RubyLlm::Skills.from_directory(@skills_path),
         RubyLlm::Skills.from_directory(@commands_path)
       )
+      skill_tool = RubyLlm::Skills::SkillTool.new(loader)
 
       chat = RubyLLM.chat
-      chat.with_skill_loader(loader)
+      chat.with_tool(skill_tool)
 
       response = chat.ask("What skills and commands are available?")
 
