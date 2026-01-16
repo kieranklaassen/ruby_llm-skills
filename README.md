@@ -4,6 +4,7 @@ Agent Skills for [RubyLLM](https://github.com/crmne/ruby_llm). Teach your AI how
 
 [![Gem Version](https://badge.fury.io/rb/ruby_llm-skills.svg)](https://badge.fury.io/rb/ruby_llm-skills)
 [![CI](https://github.com/kieranklaassen/ruby_llm-skills/actions/workflows/ci.yml/badge.svg)](https://github.com/kieranklaassen/ruby_llm-skills/actions)
+[![Compound Engineered](https://img.shields.io/badge/Compound-Engineered-6366f1)](https://github.com/EveryInc/compound-engineering-plugin)
 
 ## Installation
 
