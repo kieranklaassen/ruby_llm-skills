@@ -159,6 +159,96 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
     assert_includes result, "# Valid Skill Instructions"
   end
 
+  # Resource loading tests
+
+  def test_parameters_include_optional_resource
+    params = @tool.params_schema
+
+    assert params["properties"].key?("resource")
+    assert_equal "string", params["properties"]["resource"]["type"]
+    refute_includes params["required"], "resource"
+  end
+
+  def test_call_with_resource_loads_script
+    result = @tool.call({"skill_name" => "with-scripts", "resource" => "scripts/helper.rb"})
+
+    assert_includes result, "# Resource: scripts/helper.rb"
+    assert_includes result, "def helper_method"
+    assert_includes result, "Hello from helper"
+  end
+
+  def test_call_with_resource_loads_reference
+    result = @tool.call({"skill_name" => "with-all-resources", "resource" => "references/guide.md"})
+
+    assert_includes result, "# Resource: references/guide.md"
+    assert_includes result, "# Reference Guide"
+  end
+
+  def test_call_with_resource_loads_asset
+    result = @tool.call({"skill_name" => "with-all-resources", "resource" => "assets/template.txt"})
+
+    assert_includes result, "# Resource: assets/template.txt"
+  end
+
+  def test_call_with_nonexistent_resource_returns_error
+    result = @tool.call({"skill_name" => "with-scripts", "resource" => "scripts/nonexistent.rb"})
+
+    assert_includes result, "Resource 'scripts/nonexistent.rb' not found"
+    assert_includes result, "Available:"
+  end
+
+  def test_call_with_path_traversal_returns_error
+    result = @tool.call({"skill_name" => "with-scripts", "resource" => "../../../etc/passwd"})
+
+    assert_includes result, "Invalid resource path"
+  end
+
+  def test_call_with_absolute_path_returns_error
+    result = @tool.call({"skill_name" => "with-scripts", "resource" => "/etc/passwd"})
+
+    assert_includes result, "Invalid resource path"
+  end
+
+  def test_call_with_resource_on_virtual_skill_returns_error
+    require "ruby_llm/skills/database_loader"
+
+    records = [
+      MockDatabaseRecord.new(
+        id: 1,
+        name: "db-skill",
+        description: "A database skill",
+        content: "# Database Skill Content"
+      )
+    ]
+    loader = RubyLlm::Skills::DatabaseLoader.new(records)
+    tool = RubyLlm::Skills::SkillTool.new(loader)
+
+    result = tool.call({"skill_name" => "db-skill", "resource" => "scripts/test.rb"})
+    assert_includes result, "Cannot load resources from virtual skills"
+  end
+
+  def test_execute_with_resource_keyword_arg
+    result = @tool.execute(skill_name: "with-scripts", resource: "scripts/helper.rb")
+
+    assert_includes result, "# Resource: scripts/helper.rb"
+    assert_includes result, "def helper_method"
+  end
+
+  def test_skill_response_includes_resource_loading_hint
+    result = @tool.call({"skill_name" => "with-scripts"})
+
+    assert_includes result, "To load a resource, call this tool again with resource parameter"
+    assert_includes result, "scripts/"
+  end
+
+  def test_skill_response_shows_full_resource_paths
+    result = @tool.call({"skill_name" => "with-all-resources"})
+
+    assert_includes result, "scripts/main.rb"
+    assert_includes result, "references/guide.md"
+    assert_includes result, "assets/template.txt"
+  end
+
   # Mock classes for testing
   class MockLoader
     def initialize(skills)

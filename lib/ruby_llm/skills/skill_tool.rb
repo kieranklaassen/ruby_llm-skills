@@ -26,9 +26,11 @@ module RubyLlm
     #   # Tool returns full SKILL.md content for LLM to follow
     #
     class SkillTool < RubyLLM::Tool
-      description "Load a skill to get specialized instructions for a task."
+      description "Load a skill or skill resource to get specialized instructions for a task."
       param :skill_name, type: "string",
         desc: "The name of the skill to load (from the available skills list)"
+      param :resource, type: "string", required: false,
+        desc: "Optional resource path to load (e.g., 'scripts/helper.rb', 'references/guide.md')"
 
       attr_reader :loader
 
@@ -56,17 +58,19 @@ module RubyLlm
           #{base_description}
 
           Use this tool when the user's request matches one of the available skills.
-          The tool returns the full skill instructions that you should follow.
+          Call with just skill_name to get the full skill instructions.
+          Call with skill_name and resource to load a specific file (script, reference, or asset).
 
           #{skills_xml}
         DESC
       end
 
-      # Execute the tool to load a skill's content.
+      # Execute the tool to load a skill's content or a specific resource.
       #
       # @param skill_name [String] name of skill to load
-      # @return [String] skill content or error message
-      def execute(skill_name:)
+      # @param resource [String, nil] optional resource path within the skill
+      # @return [String] skill content, resource content, or error message
+      def execute(skill_name:, resource: nil)
         skill = @loader.find(skill_name)
 
         unless skill
@@ -74,7 +78,11 @@ module RubyLlm
           return "Skill '#{skill_name}' not found. Available skills: #{available}"
         end
 
-        build_skill_response(skill)
+        if resource
+          load_resource(skill, resource)
+        else
+          build_skill_response(skill)
+        end
       end
 
       # Convert to RubyLLM Tool-compatible format.
@@ -116,21 +124,30 @@ module RubyLlm
         parts << ""
 
         # Include resource information if available
+        has_resources = skill.scripts.any? || skill.references.any? || skill.assets.any?
+
         if skill.scripts.any?
           parts << "## Available Scripts"
-          skill.scripts.each { |s| parts << "- #{File.basename(s)}" }
+          skill.scripts.each { |s| parts << "- scripts/#{File.basename(s)}" }
           parts << ""
         end
 
         if skill.references.any?
           parts << "## Available References"
-          skill.references.each { |r| parts << "- #{File.basename(r)}" }
+          skill.references.each { |r| parts << "- references/#{File.basename(r)}" }
           parts << ""
         end
 
         if skill.assets.any?
           parts << "## Available Assets"
-          skill.assets.each { |a| parts << "- #{File.basename(a)}" }
+          skill.assets.each { |a| parts << "- assets/#{File.basename(a)}" }
+          parts << ""
+        end
+
+        if has_resources
+          parts << "---"
+          parts << "To load a resource, call this tool again with resource parameter."
+          parts << "Example: skill_name=\"#{skill.name}\", resource=\"scripts/example.rb\""
           parts << ""
         end
 
@@ -146,6 +163,36 @@ module RubyLlm
           .gsub(">", "&gt;")
           .gsub('"', "&quot;")
           .gsub("'", "&apos;")
+      end
+
+      def load_resource(skill, resource_path)
+        return "Cannot load resources from virtual skills" if skill.virtual?
+
+        # Prevent path traversal
+        if resource_path.include?("..") || resource_path.start_with?("/")
+          return "Invalid resource path: #{resource_path}"
+        end
+
+        full_path = File.join(skill.path, resource_path)
+
+        unless File.exist?(full_path)
+          available = list_available_resources(skill)
+          return "Resource '#{resource_path}' not found in skill '#{skill.name}'. Available: #{available}"
+        end
+
+        unless File.file?(full_path)
+          return "Resource '#{resource_path}' is not a file"
+        end
+
+        content = File.read(full_path)
+        "# Resource: #{resource_path}\n\n#{content}"
+      end
+
+      def list_available_resources(skill)
+        resources = skill.scripts + skill.references + skill.assets
+        return "none" if resources.empty?
+
+        resources.map { |r| r.sub("#{skill.path}/", "") }.join(", ")
       end
     end
   end
