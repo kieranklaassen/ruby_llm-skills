@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module RubyLlm
+module RubyLLM
   module Skills
     # Rails integration for RubyLLM::Skills.
     #
@@ -9,7 +9,7 @@ module RubyLlm
     #
     class Railtie < ::Rails::Railtie
       initializer "ruby_llm_skills.configure" do
-        RubyLlm::Skills.default_path = Rails.root.join("app", "skills").to_s
+        RubyLLM::Skills.default_path = Rails.root.join("app", "skills").to_s
       end
 
       # Add app/skills to autoload paths
@@ -24,7 +24,7 @@ module RubyLlm
       initializer "ruby_llm_skills.active_record" do
         ActiveSupport.on_load(:active_record) do
           if defined?(RubyLLM::ActiveRecord::ChatMethods)
-            RubyLLM::ActiveRecord::ChatMethods.include(RubyLlm::Skills::ActiveRecordExtensions)
+            RubyLLM::ActiveRecord::ChatMethods.include(RubyLLM::Skills::ActiveRecordExtensions)
           end
         end
       end

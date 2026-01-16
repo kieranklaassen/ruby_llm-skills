@@ -2,7 +2,7 @@
 
 require_relative "skill_tool"
 
-module RubyLlm
+module RubyLLM
   module Skills
     # Extensions for RubyLLM::Chat to enable skill integration.
     #
@@ -25,13 +25,13 @@ module RubyLlm
       # @param only [Array<Symbol, String>, nil] include only these skills
       # @return [self] for chaining
       def with_skills(*sources, only: nil)
-        sources = [RubyLlm::Skills.default_path] if sources.empty?
+        sources = [RubyLLM::Skills.default_path] if sources.empty?
         loaders = sources.map { |s| to_loader(s) }
 
-        loader = (loaders.length == 1) ? loaders.first : RubyLlm::Skills.compose(*loaders)
+        loader = (loaders.length == 1) ? loaders.first : RubyLLM::Skills.compose(*loaders)
         loader = FilteredLoader.new(loader, only) if only
 
-        skill_tool = RubyLlm::Skills::SkillTool.new(loader)
+        skill_tool = RubyLLM::Skills::SkillTool.new(loader)
         with_tool(skill_tool)
       end
 
@@ -40,9 +40,9 @@ module RubyLlm
       def to_loader(source)
         case source
         when String
-          RubyLlm::Skills.from_directory(source)
+          RubyLLM::Skills.from_directory(source)
         when ->(s) { s.respond_to?(:to_a) && s.first&.respond_to?(:name) && s.first.respond_to?(:content) }
-          RubyLlm::Skills.from_database(source)
+          RubyLLM::Skills.from_database(source)
         else
           source
         end

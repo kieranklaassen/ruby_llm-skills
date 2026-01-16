@@ -3,24 +3,24 @@
 require "test_helper"
 require "ruby_llm/skills/database_loader"
 
-class RubyLlm::Skills::TestDatabaseLoader < Minitest::Test
+class RubyLLM::Skills::TestDatabaseLoader < Minitest::Test
   def setup
     @records = [
       MockRecord.new(id: 1, name: "db-skill-one", description: "First database skill", content: "# Skill One\n\nContent here"),
       MockRecord.new(id: 2, name: "db-skill-two", description: "Second database skill", content: "# Skill Two")
     ]
-    @loader = RubyLlm::Skills::DatabaseLoader.new(@records)
+    @loader = RubyLLM::Skills::DatabaseLoader.new(@records)
   end
 
   def test_initialize_with_records
-    loader = RubyLlm::Skills::DatabaseLoader.new(@records)
+    loader = RubyLLM::Skills::DatabaseLoader.new(@records)
     assert_equal @records, loader.records
   end
 
   def test_list_returns_skills_array
     skills = @loader.list
     assert_instance_of Array, skills
-    assert skills.all? { |s| s.is_a?(RubyLlm::Skills::Skill) }
+    assert skills.all? { |s| s.is_a?(RubyLLM::Skills::Skill) }
   end
 
   def test_list_creates_skill_for_each_record
@@ -30,7 +30,7 @@ class RubyLlm::Skills::TestDatabaseLoader < Minitest::Test
 
   def test_find_returns_skill_by_name
     skill = @loader.find("db-skill-one")
-    assert_instance_of RubyLlm::Skills::Skill, skill
+    assert_instance_of RubyLLM::Skills::Skill, skill
     assert_equal "db-skill-one", skill.name
   end
 
@@ -81,7 +81,7 @@ class RubyLlm::Skills::TestDatabaseLoader < Minitest::Test
 
   def test_reload_calls_reload_on_records_if_available
     reloadable = MockReloadableRecords.new(@records)
-    loader = RubyLlm::Skills::DatabaseLoader.new(reloadable)
+    loader = RubyLLM::Skills::DatabaseLoader.new(reloadable)
 
     loader.reload!
     assert reloadable.reloaded?
@@ -95,7 +95,7 @@ class RubyLlm::Skills::TestDatabaseLoader < Minitest::Test
       content: "# Content",
       license: "MIT"
     )
-    loader = RubyLlm::Skills::DatabaseLoader.new([record])
+    loader = RubyLLM::Skills::DatabaseLoader.new([record])
     skill = loader.find("licensed-skill")
 
     assert_equal "MIT", skill.license
@@ -109,7 +109,7 @@ class RubyLlm::Skills::TestDatabaseLoader < Minitest::Test
       content: "# Content",
       compatibility: "RubyLLM 1.0+"
     )
-    loader = RubyLlm::Skills::DatabaseLoader.new([record])
+    loader = RubyLLM::Skills::DatabaseLoader.new([record])
     skill = loader.find("compatible-skill")
 
     assert_equal "RubyLLM 1.0+", skill.compatibility
@@ -123,20 +123,20 @@ class RubyLlm::Skills::TestDatabaseLoader < Minitest::Test
       content: "# Content",
       skill_metadata: {"author" => "test", "version" => "1.0"}
     )
-    loader = RubyLlm::Skills::DatabaseLoader.new([record])
+    loader = RubyLLM::Skills::DatabaseLoader.new([record])
     skill = loader.find("meta-skill")
 
     assert_equal({"author" => "test", "version" => "1.0"}, skill.custom_metadata)
   end
 
   def test_handles_empty_records
-    loader = RubyLlm::Skills::DatabaseLoader.new([])
+    loader = RubyLLM::Skills::DatabaseLoader.new([])
     assert_equal [], loader.list
   end
 
   def test_from_database_module_method
-    loader = RubyLlm::Skills.from_database(@records)
-    assert_instance_of RubyLlm::Skills::DatabaseLoader, loader
+    loader = RubyLLM::Skills.from_database(@records)
+    assert_instance_of RubyLLM::Skills::DatabaseLoader, loader
   end
 
   def test_record_without_id_uses_name
@@ -145,7 +145,7 @@ class RubyLlm::Skills::TestDatabaseLoader < Minitest::Test
       description: "Skill without id",
       content: "# Content"
     )
-    loader = RubyLlm::Skills::DatabaseLoader.new([record])
+    loader = RubyLLM::Skills::DatabaseLoader.new([record])
     skill = loader.find("no-id-skill")
 
     assert_includes skill.path, "no-id-skill"

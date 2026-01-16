@@ -15,9 +15,9 @@ require_relative "skills/chat_extensions"
 require_relative "skills/railtie" if defined?(Rails::Railtie)
 
 # Extend RubyLLM::Chat with skill methods
-RubyLLM::Chat.include(RubyLlm::Skills::ChatExtensions)
+RubyLLM::Chat.include(RubyLLM::Skills::ChatExtensions)
 
-module RubyLlm
+module RubyLLM
   module Skills
     class << self
       attr_accessor :default_path
@@ -27,7 +27,7 @@ module RubyLlm
       # @param path [String] path to skills directory (defaults to default_path)
       # @return [FilesystemLoader] loader for the directory
       # @example
-      #   RubyLlm::Skills.from_directory("app/skills")
+      #   RubyLLM::Skills.from_directory("app/skills")
       def from_directory(path = default_path)
         FilesystemLoader.new(path)
       end
@@ -38,7 +38,7 @@ module RubyLlm
       # @return [Skill] the loaded skill
       # @raise [LoadError] if SKILL.md not found
       # @example
-      #   RubyLlm::Skills.load("app/skills/my-skill")
+      #   RubyLLM::Skills.load("app/skills/my-skill")
       def load(path)
         skill_md = File.join(path, "SKILL.md")
         raise LoadError, "SKILL.md not found in #{path}" unless File.exist?(skill_md)
@@ -52,7 +52,7 @@ module RubyLlm
       # @param records [ActiveRecord::Relation, Array] collection of skill records
       # @return [DatabaseLoader] loader for the records
       # @example
-      #   RubyLlm::Skills.from_database(Skill.where(active: true))
+      #   RubyLLM::Skills.from_database(Skill.where(active: true))
       def from_database(records)
         require_relative "skills/database_loader"
         DatabaseLoader.new(records)
@@ -63,9 +63,9 @@ module RubyLlm
       # @param loaders [Array<Loader>] loaders to combine
       # @return [CompositeLoader] combined loader
       # @example
-      #   RubyLlm::Skills.compose(
-      #     RubyLlm::Skills.from_directory("app/skills"),
-      #     RubyLlm::Skills.from_database(Skill.all)
+      #   RubyLLM::Skills.compose(
+      #     RubyLLM::Skills.from_directory("app/skills"),
+      #     RubyLLM::Skills.from_database(Skill.all)
       #   )
       def compose(*loaders)
         require_relative "skills/composite_loader"

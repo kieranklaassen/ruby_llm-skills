@@ -2,7 +2,7 @@
 
 require "integration_helper"
 
-class RubyLlm::Skills::TestSkillToolIntegration < Minitest::Test
+class RubyLLM::Skills::TestSkillToolIntegration < Minitest::Test
   def setup
     @skills_path = File.join(fixtures_path, "skills")
     @commands_path = File.join(fixtures_path, "commands")
@@ -11,7 +11,7 @@ class RubyLlm::Skills::TestSkillToolIntegration < Minitest::Test
 
   def test_with_skills_default
     VCR.use_cassette("with_skills_basic") do
-      RubyLlm::Skills.default_path = @skills_path
+      RubyLLM::Skills.default_path = @skills_path
 
       chat = RubyLLM.chat
       chat.with_skills

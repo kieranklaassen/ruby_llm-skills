@@ -2,7 +2,7 @@
 
 require "yaml"
 
-module RubyLlm
+module RubyLLM
   module Skills
     # Parses SKILL.md files with YAML frontmatter.
     #

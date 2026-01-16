@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module RubyLlm
+module RubyLLM
   module Skills
     # Represents a single skill with its metadata and content.
     #

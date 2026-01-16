@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module RubyLlm
+module RubyLLM
   module Skills
     # Validates skill structure according to the Agent Skills specification.
     #

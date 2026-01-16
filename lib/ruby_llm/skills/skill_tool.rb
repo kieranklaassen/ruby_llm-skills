@@ -2,7 +2,7 @@
 
 require "ruby_llm"
 
-module RubyLlm
+module RubyLLM
   module Skills
     # A RubyLLM Tool that enables progressive skill loading.
     #
@@ -17,8 +17,8 @@ module RubyLlm
     # 3. Resources (scripts, references) can be loaded separately as needed
     #
     # @example Basic usage
-    #   loader = RubyLlm::Skills.from_directory("app/skills")
-    #   skill_tool = RubyLlm::Skills::SkillTool.new(loader)
+    #   loader = RubyLLM::Skills.from_directory("app/skills")
+    #   skill_tool = RubyLLM::Skills::SkillTool.new(loader)
     #
     #   chat.with_tools(skill_tool)
     #   chat.ask("Help me generate a PDF report")

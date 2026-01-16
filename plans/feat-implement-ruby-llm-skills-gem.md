@@ -51,11 +51,11 @@ Implement a gem with these components:
 - Returns detailed error messages
 
 **4. Module API (`lib/ruby_llm/skills.rb`)**
-- `RubyLlm::Skills.default_path` - Config accessor
-- `RubyLlm::Skills.logger` - Logger accessor
-- `RubyLlm::Skills.load(from:)` - Load and return skills
-- `RubyLlm::Skills.validate(skill)` - Validate structure
-- `RubyLlm::Skills.find(name)` - Find specific skill
+- `RubyLLM::Skills.default_path` - Config accessor
+- `RubyLLM::Skills.logger` - Logger accessor
+- `RubyLLM::Skills.load(from:)` - Load and return skills
+- `RubyLLM::Skills.validate(skill)` - Validate structure
+- `RubyLLM::Skills.find(name)` - Find specific skill
 
 **5. Skill Tool (`lib/ruby_llm/skills/skill_tool.rb`)** ⚠️ CRITICAL
 - Custom `RubyLLM::Tool` subclass for progressive skill loading
@@ -116,7 +116,7 @@ Implement a gem with these components:
 
 ```ruby
 # lib/ruby_llm/skills/skill.rb
-module RubyLlm
+module RubyLLM
   module Skills
     class Skill
       attr_reader :name, :description, :path, :metadata
@@ -178,7 +178,7 @@ end
 
 ```ruby
 # lib/ruby_llm/skills/validator.rb
-module RubyLlm
+module RubyLLM
   module Skills
     class Validator
       NAME_FORMAT = /\A[a-z0-9]+(-[a-z0-9]+)*\z/
@@ -247,7 +247,7 @@ end
 
 ```ruby
 # lib/ruby_llm/skills/loaders/filesystem.rb
-module RubyLlm
+module RubyLLM
   module Skills
     module Loaders
       class Filesystem < Loader
@@ -314,7 +314,7 @@ require_relative "skills/validator"
 require_relative "skills/loader"
 require_relative "skills/loaders/filesystem"
 
-module RubyLlm
+module RubyLLM
   module Skills
     class << self
       attr_accessor :default_path, :logger
@@ -394,7 +394,7 @@ end
 require 'zip'
 require 'tmpdir'
 
-module RubyLlm
+module RubyLLM
   module Skills
     module Loaders
       class Zip < Loader
@@ -468,7 +468,7 @@ end
 
 ```ruby
 # lib/ruby_llm/skills/loaders/database.rb
-module RubyLlm
+module RubyLLM
   module Skills
     module Loaders
       class Database < Loader
@@ -598,7 +598,7 @@ This phase implements the **core progressive disclosure mechanism** - the Skill 
 # lib/ruby_llm/skills/skill_tool.rb
 # frozen_string_literal: true
 
-module RubyLlm
+module RubyLLM
   module Skills
     # Tool that enables progressive skill loading via LLM tool calls.
     # The LLM reads available skills from the description and calls
@@ -694,8 +694,8 @@ module RubyLLM
         raise ArgumentError, "Cannot specify both 'only' and 'except'"
       end
 
-      from ||= RubyLlm::Skills.default_path
-      skills = RubyLlm::Skills.load(from: from)
+      from ||= RubyLLM::Skills.default_path
+      skills = RubyLLM::Skills.load(from: from)
 
       # Apply filters
       skills = skills.select { |s| only.include?(s.name.to_sym) } if only
@@ -705,13 +705,13 @@ module RubyLLM
       @loaded_skills ||= {}
       skills.each do |skill|
         if @loaded_skills.key?(skill.name)
-          RubyLlm::Skills.logger&.info "Skill '#{skill.name}' overridden"
+          RubyLLM::Skills.logger&.info "Skill '#{skill.name}' overridden"
         end
         @loaded_skills[skill.name] = skill
       end
 
       # Create and register the Skill tool with all loaded skills
-      skill_tool = RubyLlm::Skills::SkillTool.new(@loaded_skills.values)
+      skill_tool = RubyLLM::Skills::SkillTool.new(@loaded_skills.values)
       with_tool(skill_tool)
 
       self
@@ -733,11 +733,11 @@ require "test_helper"
 
 class TestSkillTool < Minitest::Test
   def setup
-    @skill = RubyLlm::Skills::Skill.new(
+    @skill = RubyLLM::Skills::Skill.new(
       path: "test/fixtures/skills/pdf-report",
       metadata: { "name" => "pdf-report", "description" => "Generate PDF reports" }
     )
-    @tool = RubyLlm::Skills::SkillTool.new([@skill])
+    @tool = RubyLLM::Skills::SkillTool.new([@skill])
   end
 
   def test_description_includes_available_skills
@@ -800,12 +800,12 @@ end
 
 ```ruby
 # lib/ruby_llm/skills/railtie.rb
-module RubyLlm
+module RubyLLM
   module Skills
     class Railtie < Rails::Railtie
       initializer "ruby_llm_skills.configure" do |app|
-        RubyLlm::Skills.default_path = Rails.root.join('app', 'skills')
-        RubyLlm::Skills.logger = Rails.logger
+        RubyLLM::Skills.default_path = Rails.root.join('app', 'skills')
+        RubyLLM::Skills.logger = Rails.logger
       end
 
       rake_tasks do
@@ -824,7 +824,7 @@ end
 # lib/generators/skill/skill_generator.rb
 require 'rails/generators'
 
-module RubyLlm
+module RubyLLM
   module Skills
     class SkillGenerator < Rails::Generators::NamedBase
       source_root File.expand_path('templates', __dir__)

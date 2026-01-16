@@ -2,12 +2,12 @@
 
 require "test_helper"
 
-class RubyLlm::TestSkills < Minitest::Test
+class RubyLLM::TestSkills < Minitest::Test
   def test_that_it_has_a_version_number
-    refute_nil ::RubyLlm::Skills::VERSION
+    refute_nil ::RubyLLM::Skills::VERSION
   end
 
   def test_module_exists
-    assert defined?(RubyLlm::Skills)
+    assert defined?(RubyLLM::Skills)
   end
 end

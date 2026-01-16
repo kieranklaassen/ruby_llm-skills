@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module RubyLlm
+module RubyLLM
   module Skills
     # Combines multiple loaders into a single source.
     #

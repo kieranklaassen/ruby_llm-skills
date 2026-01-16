@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module RubyLlm
+module RubyLLM
   module Skills
     # Base error class for all skills-related errors.
     # Rescue this to catch any error from the gem.

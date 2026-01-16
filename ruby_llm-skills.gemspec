@@ -4,7 +4,7 @@ require_relative "lib/ruby_llm/skills/version"
 
 Gem::Specification.new do |spec|
   spec.name = "ruby_llm-skills"
-  spec.version = RubyLlm::Skills::VERSION
+  spec.version = RubyLLM::Skills::VERSION
   spec.authors = ["Kieran Klaassen"]
   spec.email = ["kieranklaassen@gmail.com"]
 

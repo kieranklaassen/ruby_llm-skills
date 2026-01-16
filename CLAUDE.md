@@ -41,7 +41,7 @@ bundle exec rake release     # Build, tag, and push gem (requires credentials)
 
 ### Module Structure
 
-The gem uses the `RubyLlm::Skills` namespace (note: lowercase 'llm' in module name):
+The gem uses the `RubyLLM::Skills` namespace (matches the parent `ruby_llm` gem):
 
 ```
 lib/ruby_llm/
@@ -79,7 +79,7 @@ Uses Minitest framework. Test structure:
 
 - Uses **StandardRB** for linting (Ruby 3.1+ compatible)
 - All files use `frozen_string_literal: true`
-- Module naming: `RubyLlm` (lowercase 'llm'), not `RubyLLM`
+- Module naming: `RubyLLM` (uppercase 'LLM' to match parent gem)
 
 ## CI/CD
 

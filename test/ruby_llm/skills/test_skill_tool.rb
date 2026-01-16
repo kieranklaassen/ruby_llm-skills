@@ -4,15 +4,15 @@ require "test_helper"
 require "ruby_llm/skills/skill_tool"
 require "ruby_llm/skills/composite_loader"
 
-class RubyLlm::Skills::TestSkillTool < Minitest::Test
+class RubyLLM::Skills::TestSkillTool < Minitest::Test
   def setup
     @skills_path = File.join(fixtures_path, "skills")
-    @loader = RubyLlm::Skills::FilesystemLoader.new(@skills_path)
-    @tool = RubyLlm::Skills::SkillTool.new(@loader)
+    @loader = RubyLLM::Skills::FilesystemLoader.new(@skills_path)
+    @tool = RubyLLM::Skills::SkillTool.new(@loader)
   end
 
   def test_initialize_with_loader
-    tool = RubyLlm::Skills::SkillTool.new(@loader)
+    tool = RubyLLM::Skills::SkillTool.new(@loader)
     assert_equal @loader, tool.loader
   end
 
@@ -40,7 +40,7 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
 
   def test_description_escapes_xml_special_chars
     # Create a mock loader with special characters
-    mock_skill = RubyLlm::Skills::Skill.new(
+    mock_skill = RubyLLM::Skills::Skill.new(
       path: "database:test",
       metadata: {
         "name" => "test-skill",
@@ -48,7 +48,7 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
       }
     )
     mock_loader = MockLoader.new([mock_skill])
-    tool = RubyLlm::Skills::SkillTool.new(mock_loader)
+    tool = RubyLLM::Skills::SkillTool.new(mock_loader)
 
     description = tool.description
     assert_includes description, "&lt;with&gt;"
@@ -118,8 +118,8 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
   end
 
   def test_description_handles_empty_loader
-    empty_loader = RubyLlm::Skills::FilesystemLoader.new("/nonexistent/path")
-    tool = RubyLlm::Skills::SkillTool.new(empty_loader)
+    empty_loader = RubyLLM::Skills::FilesystemLoader.new("/nonexistent/path")
+    tool = RubyLLM::Skills::SkillTool.new(empty_loader)
 
     description = tool.description
     assert_includes description, "<available_skills>"
@@ -137,8 +137,8 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
         content: "# Database Skill Content"
       )
     ]
-    loader = RubyLlm::Skills::DatabaseLoader.new(records)
-    tool = RubyLlm::Skills::SkillTool.new(loader)
+    loader = RubyLLM::Skills::DatabaseLoader.new(records)
+    tool = RubyLLM::Skills::SkillTool.new(loader)
 
     description = tool.description
     assert_includes description, "<name>db-skill</name>"
@@ -148,9 +148,9 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
   end
 
   def test_works_with_composite_loader
-    loader1 = RubyLlm::Skills::FilesystemLoader.new(@skills_path)
-    composite = RubyLlm::Skills::CompositeLoader.new([loader1])
-    tool = RubyLlm::Skills::SkillTool.new(composite)
+    loader1 = RubyLLM::Skills::FilesystemLoader.new(@skills_path)
+    composite = RubyLLM::Skills::CompositeLoader.new([loader1])
+    tool = RubyLLM::Skills::SkillTool.new(composite)
 
     description = tool.description
     assert_includes description, "valid-skill"
@@ -220,8 +220,8 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
         content: "# Database Skill Content"
       )
     ]
-    loader = RubyLlm::Skills::DatabaseLoader.new(records)
-    tool = RubyLlm::Skills::SkillTool.new(loader)
+    loader = RubyLLM::Skills::DatabaseLoader.new(records)
+    tool = RubyLLM::Skills::SkillTool.new(loader)
 
     result = tool.call({"command" => "db-skill", "resource" => "scripts/test.rb"})
     assert_includes result, "Cannot load resources from virtual skills"

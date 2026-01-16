@@ -2,27 +2,27 @@
 
 require "test_helper"
 
-class RubyLlm::Skills::TestFilesystemLoader < Minitest::Test
+class RubyLLM::Skills::TestFilesystemLoader < Minitest::Test
   def setup
     @skills_path = File.join(fixtures_path, "skills")
-    @loader = RubyLlm::Skills::FilesystemLoader.new(@skills_path)
+    @loader = RubyLLM::Skills::FilesystemLoader.new(@skills_path)
   end
 
   def test_initialize_with_path
-    loader = RubyLlm::Skills::FilesystemLoader.new("/path/to/skills")
+    loader = RubyLLM::Skills::FilesystemLoader.new("/path/to/skills")
     assert_equal "/path/to/skills", loader.path
   end
 
   def test_initialize_accepts_pathname
     require "pathname"
-    loader = RubyLlm::Skills::FilesystemLoader.new(Pathname.new("/path/to/skills"))
+    loader = RubyLLM::Skills::FilesystemLoader.new(Pathname.new("/path/to/skills"))
     assert_equal "/path/to/skills", loader.path
   end
 
   def test_list_returns_skills_array
     skills = @loader.list
     assert_instance_of Array, skills
-    assert skills.all? { |s| s.is_a?(RubyLlm::Skills::Skill) }
+    assert skills.all? { |s| s.is_a?(RubyLLM::Skills::Skill) }
   end
 
   def test_list_finds_all_skills_in_directory
@@ -35,20 +35,20 @@ class RubyLlm::Skills::TestFilesystemLoader < Minitest::Test
   end
 
   def test_list_returns_empty_array_for_nonexistent_path
-    loader = RubyLlm::Skills::FilesystemLoader.new("/nonexistent/path")
+    loader = RubyLLM::Skills::FilesystemLoader.new("/nonexistent/path")
     assert_equal [], loader.list
   end
 
   def test_list_returns_empty_array_for_empty_directory
     Dir.mktmpdir do |tmpdir|
-      loader = RubyLlm::Skills::FilesystemLoader.new(tmpdir)
+      loader = RubyLLM::Skills::FilesystemLoader.new(tmpdir)
       assert_equal [], loader.list
     end
   end
 
   def test_find_returns_skill_by_name
     skill = @loader.find("valid-skill")
-    assert_instance_of RubyLlm::Skills::Skill, skill
+    assert_instance_of RubyLLM::Skills::Skill, skill
     assert_equal "valid-skill", skill.name
   end
 
@@ -59,12 +59,12 @@ class RubyLlm::Skills::TestFilesystemLoader < Minitest::Test
 
   def test_get_returns_skill_by_name
     skill = @loader.get("valid-skill")
-    assert_instance_of RubyLlm::Skills::Skill, skill
+    assert_instance_of RubyLLM::Skills::Skill, skill
     assert_equal "valid-skill", skill.name
   end
 
   def test_get_raises_not_found_error_for_unknown_name
-    error = assert_raises(RubyLlm::Skills::NotFoundError) do
+    error = assert_raises(RubyLLM::Skills::NotFoundError) do
       @loader.get("nonexistent-skill")
     end
     assert_equal "Skill not found: nonexistent-skill", error.message
@@ -123,7 +123,7 @@ class RubyLlm::Skills::TestFilesystemLoader < Minitest::Test
 
   def test_loads_single_file_commands
     commands_path = File.join(fixtures_path, "commands")
-    loader = RubyLlm::Skills::FilesystemLoader.new(commands_path)
+    loader = RubyLLM::Skills::FilesystemLoader.new(commands_path)
 
     skills = loader.list
     assert skills.any? { |s| s.name == "write-poem" }
@@ -131,7 +131,7 @@ class RubyLlm::Skills::TestFilesystemLoader < Minitest::Test
 
   def test_single_file_command_has_metadata
     commands_path = File.join(fixtures_path, "commands")
-    loader = RubyLlm::Skills::FilesystemLoader.new(commands_path)
+    loader = RubyLLM::Skills::FilesystemLoader.new(commands_path)
 
     skill = loader.find("write-poem")
     assert_equal "write-poem", skill.name
@@ -140,7 +140,7 @@ class RubyLlm::Skills::TestFilesystemLoader < Minitest::Test
 
   def test_single_file_command_has_content
     commands_path = File.join(fixtures_path, "commands")
-    loader = RubyLlm::Skills::FilesystemLoader.new(commands_path)
+    loader = RubyLLM::Skills::FilesystemLoader.new(commands_path)
 
     skill = loader.find("write-poem")
     assert_includes skill.content, "# Write a Poem"
@@ -149,7 +149,7 @@ class RubyLlm::Skills::TestFilesystemLoader < Minitest::Test
 
   def test_single_file_command_is_virtual
     commands_path = File.join(fixtures_path, "commands")
-    loader = RubyLlm::Skills::FilesystemLoader.new(commands_path)
+    loader = RubyLLM::Skills::FilesystemLoader.new(commands_path)
 
     skill = loader.find("write-poem")
     assert skill.virtual?
@@ -157,7 +157,7 @@ class RubyLlm::Skills::TestFilesystemLoader < Minitest::Test
 
   def test_single_file_command_has_no_resources
     commands_path = File.join(fixtures_path, "commands")
-    loader = RubyLlm::Skills::FilesystemLoader.new(commands_path)
+    loader = RubyLLM::Skills::FilesystemLoader.new(commands_path)
 
     skill = loader.find("write-poem")
     assert_empty skill.scripts
