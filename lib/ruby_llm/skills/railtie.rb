@@ -12,11 +12,11 @@ module RubyLLM
         RubyLLM::Skills.default_path = Rails.root.join("app", "skills").to_s
       end
 
-      # Add app/skills to autoload paths
-      initializer "ruby_llm_skills.autoload_paths" do |app|
+      # Add app/skills to autoload paths (before initialization)
+      config.before_configuration do |app|
         skills_path = Rails.root.join("app", "skills")
         if skills_path.exist?
-          app.config.autoload_paths << skills_path.to_s
+          app.config.autoload_paths += [skills_path.to_s]
         end
       end
 
