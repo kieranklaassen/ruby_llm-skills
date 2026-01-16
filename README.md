@@ -70,19 +70,22 @@ chat.ask "/write-poem about robots"
 
 ## Database Skills
 
+Store skills or commands in your database:
+
 ```ruby
 create_table :skills do |t|
   t.string :name, null: false
   t.text :description, null: false
-  t.text :content, null: false
+  t.text :content, null: false  # SKILL.md body
   t.references :user
   t.timestamps
 end
 
 chat.with_skills(user.skills)
+chat.ask "/my-command args"  # works as command too
 ```
 
-Records must respond to `#name`, `#description`, and `#content`.
+Records must respond to `#name`, `#description`, and `#content`. For skills with scripts/references, use filesystem skills.
 
 ## Rails
 
