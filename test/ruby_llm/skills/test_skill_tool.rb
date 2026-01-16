@@ -61,13 +61,13 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
     params = @tool.params_schema
 
     assert_equal "object", params["type"]
-    assert params["properties"].key?("skill_name")
-    assert_equal "string", params["properties"]["skill_name"]["type"]
-    assert_includes params["required"], "skill_name"
+    assert params["properties"].key?("command")
+    assert_equal "string", params["properties"]["command"]["type"]
+    assert_includes params["required"], "command"
   end
 
   def test_call_returns_skill_content
-    result = @tool.call({"skill_name" => "valid-skill"})
+    result = @tool.call({"command" => "valid-skill"})
 
     assert_includes result, "# Skill: valid-skill"
     assert_includes result, "# Valid Skill Instructions"
@@ -75,20 +75,20 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
   end
 
   def test_call_returns_error_for_unknown_skill
-    result = @tool.call({"skill_name" => "nonexistent-skill"})
+    result = @tool.call({"command" => "nonexistent-skill"})
 
     assert_includes result, "Skill 'nonexistent-skill' not found"
     assert_includes result, "Available skills:"
   end
 
   def test_execute_is_alias_for_call
-    result = @tool.execute(skill_name: "valid-skill")
+    result = @tool.execute(command: "valid-skill")
 
     assert_includes result, "# Skill: valid-skill"
   end
 
   def test_call_includes_scripts_section_when_present
-    result = @tool.call({"skill_name" => "with-scripts"})
+    result = @tool.call({"command" => "with-scripts"})
 
     assert_includes result, "## Available Scripts"
     assert_includes result, "helper.rb"
@@ -96,14 +96,14 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
   end
 
   def test_call_includes_references_section_when_present
-    result = @tool.call({"skill_name" => "with-all-resources"})
+    result = @tool.call({"command" => "with-all-resources"})
 
     assert_includes result, "## Available References"
     assert_includes result, "guide.md"
   end
 
   def test_call_includes_assets_section_when_present
-    result = @tool.call({"skill_name" => "with-all-resources"})
+    result = @tool.call({"command" => "with-all-resources"})
 
     assert_includes result, "## Available Assets"
     assert_includes result, "template.txt"
@@ -143,7 +143,7 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
     description = tool.description
     assert_includes description, "<name>db-skill</name>"
 
-    result = tool.call({"skill_name" => "db-skill"})
+    result = tool.call({"command" => "db-skill"})
     assert_includes result, "# Database Skill Content"
   end
 
@@ -155,7 +155,7 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
     description = tool.description
     assert_includes description, "valid-skill"
 
-    result = tool.call({"skill_name" => "valid-skill"})
+    result = tool.call({"command" => "valid-skill"})
     assert_includes result, "# Valid Skill Instructions"
   end
 
@@ -170,7 +170,7 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
   end
 
   def test_call_with_resource_loads_script
-    result = @tool.call({"skill_name" => "with-scripts", "resource" => "scripts/helper.rb"})
+    result = @tool.call({"command" => "with-scripts", "resource" => "scripts/helper.rb"})
 
     assert_includes result, "# Resource: scripts/helper.rb"
     assert_includes result, "def helper_method"
@@ -178,33 +178,33 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
   end
 
   def test_call_with_resource_loads_reference
-    result = @tool.call({"skill_name" => "with-all-resources", "resource" => "references/guide.md"})
+    result = @tool.call({"command" => "with-all-resources", "resource" => "references/guide.md"})
 
     assert_includes result, "# Resource: references/guide.md"
     assert_includes result, "# Reference Guide"
   end
 
   def test_call_with_resource_loads_asset
-    result = @tool.call({"skill_name" => "with-all-resources", "resource" => "assets/template.txt"})
+    result = @tool.call({"command" => "with-all-resources", "resource" => "assets/template.txt"})
 
     assert_includes result, "# Resource: assets/template.txt"
   end
 
   def test_call_with_nonexistent_resource_returns_error
-    result = @tool.call({"skill_name" => "with-scripts", "resource" => "scripts/nonexistent.rb"})
+    result = @tool.call({"command" => "with-scripts", "resource" => "scripts/nonexistent.rb"})
 
     assert_includes result, "Resource 'scripts/nonexistent.rb' not found"
     assert_includes result, "Available:"
   end
 
   def test_call_with_path_traversal_returns_error
-    result = @tool.call({"skill_name" => "with-scripts", "resource" => "../../../etc/passwd"})
+    result = @tool.call({"command" => "with-scripts", "resource" => "../../../etc/passwd"})
 
     assert_includes result, "Invalid resource path"
   end
 
   def test_call_with_absolute_path_returns_error
-    result = @tool.call({"skill_name" => "with-scripts", "resource" => "/etc/passwd"})
+    result = @tool.call({"command" => "with-scripts", "resource" => "/etc/passwd"})
 
     assert_includes result, "Invalid resource path"
   end
@@ -223,26 +223,26 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
     loader = RubyLlm::Skills::DatabaseLoader.new(records)
     tool = RubyLlm::Skills::SkillTool.new(loader)
 
-    result = tool.call({"skill_name" => "db-skill", "resource" => "scripts/test.rb"})
+    result = tool.call({"command" => "db-skill", "resource" => "scripts/test.rb"})
     assert_includes result, "Cannot load resources from virtual skills"
   end
 
   def test_execute_with_resource_keyword_arg
-    result = @tool.execute(skill_name: "with-scripts", resource: "scripts/helper.rb")
+    result = @tool.execute(command: "with-scripts", resource: "scripts/helper.rb")
 
     assert_includes result, "# Resource: scripts/helper.rb"
     assert_includes result, "def helper_method"
   end
 
   def test_skill_response_includes_resource_loading_hint
-    result = @tool.call({"skill_name" => "with-scripts"})
+    result = @tool.call({"command" => "with-scripts"})
 
     assert_includes result, "To load a resource, call this tool again with resource parameter"
     assert_includes result, "scripts/"
   end
 
   def test_skill_response_shows_full_resource_paths
-    result = @tool.call({"skill_name" => "with-all-resources"})
+    result = @tool.call({"command" => "with-all-resources"})
 
     assert_includes result, "scripts/main.rb"
     assert_includes result, "references/guide.md"

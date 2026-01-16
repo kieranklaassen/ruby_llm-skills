@@ -26,9 +26,9 @@ module RubyLlm
     #   # Tool returns full SKILL.md content for LLM to follow
     #
     class SkillTool < RubyLLM::Tool
-      description "Load a skill or skill resource to get specialized instructions for a task."
-      param :skill_name, type: "string",
-        desc: "The name of the skill to load (from the available skills list)"
+      description "Execute a skill within the main conversation."
+      param :command, type: "string",
+        desc: "The skill name (e.g., 'pdf' or 'xlsx')"
       param :resource, type: "string", required: false,
         desc: "Optional resource path to load (e.g., 'scripts/helper.rb', 'references/guide.md')"
 
@@ -58,8 +58,8 @@ module RubyLlm
           #{base_description}
 
           Use this tool when the user's request matches one of the available skills.
-          Call with just skill_name to get the full skill instructions.
-          Call with skill_name and resource to load a specific file (script, reference, or asset).
+          Call with just command to get the full skill instructions.
+          Call with command and resource to load a specific file (script, reference, or asset).
 
           #{skills_xml}
         DESC
@@ -67,15 +67,15 @@ module RubyLlm
 
       # Execute the tool to load a skill's content or a specific resource.
       #
-      # @param skill_name [String] name of skill to load
+      # @param command [String] name of skill to load
       # @param resource [String, nil] optional resource path within the skill
       # @return [String] skill content, resource content, or error message
-      def execute(skill_name:, resource: nil)
-        skill = @loader.find(skill_name)
+      def execute(command:, resource: nil)
+        skill = @loader.find(command)
 
         unless skill
           available = @loader.list.map(&:name).join(", ")
-          return "Skill '#{skill_name}' not found. Available skills: #{available}"
+          return "Skill '#{command}' not found. Available skills: #{available}"
         end
 
         if resource
@@ -147,7 +147,7 @@ module RubyLlm
         if has_resources
           parts << "---"
           parts << "To load a resource, call this tool again with resource parameter."
-          parts << "Example: skill_name=\"#{skill.name}\", resource=\"scripts/example.rb\""
+          parts << "Example: command=\"#{skill.name}\", resource=\"scripts/example.rb\""
           parts << ""
         end
 
