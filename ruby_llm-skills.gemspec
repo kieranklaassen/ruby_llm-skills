@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
                      "skill discovery and loading from filesystem, zip archives, and databases."
   spec.homepage = "https://github.com/kieranklaassen/ruby_llm-skills"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.1.0"
+  spec.required_ruby_version = ">= 3.2.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/kieranklaassen/ruby_llm-skills"
