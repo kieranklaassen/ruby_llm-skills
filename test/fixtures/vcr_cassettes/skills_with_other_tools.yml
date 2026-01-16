@@ -39,7 +39,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 16 Jan 2026 05:30:13 GMT
+      - Fri, 16 Jan 2026 05:44:34 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -51,13 +51,13 @@ http_interactions:
       Openai-Organization:
       - every-1
       Openai-Processing-Ms:
-      - '13634'
+      - '8820'
       Openai-Project:
       - proj_JsyAYubtMiaADRh0HSQAkspY
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '13654'
+      - '8847'
       X-Ratelimit-Limit-Requests:
       - '30000'
       X-Ratelimit-Limit-Tokens:
@@ -65,13 +65,13 @@ http_interactions:
       X-Ratelimit-Remaining-Requests:
       - '29999'
       X-Ratelimit-Remaining-Tokens:
-      - '179999985'
+      - '179999988'
       X-Ratelimit-Reset-Requests:
       - 2ms
       X-Ratelimit-Reset-Tokens:
       - 0s
       X-Request-Id:
-      - req_8ebcfeda48674ef7ab42123f27124c9b
+      - req_d2c0e0b82c8c4de0b536a6c4493a291b
       X-Openai-Proxy-Wasm:
       - v0.1
       Cf-Cache-Status:
@@ -83,12 +83,12 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9beb37e25b962f09-LAX
+      - 9beb4d05faae5708-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: !binary |-
-        ewogICJpZCI6ICJjaGF0Y21wbC1DeVdoRFFKMk1LUzhzNjI0UGlzS1gwYmhoVDhWWSIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc2ODU0MTM5OSwKICAibW9kZWwiOiAiZ3B0LTUtbmFuby0yMDI1LTA4LTA3IiwKICAiY2hvaWNlcyI6IFsKICAgIHsKICAgICAgImluZGV4IjogMCwKICAgICAgIm1lc3NhZ2UiOiB7CiAgICAgICAgInJvbGUiOiAiYXNzaXN0YW50IiwKICAgICAgICAiY29udGVudCI6ICItIDIgKyAyID0gNFxuXG5BdmFpbGFibGUgc2tpbGxzIChiYXNlZCBvbiB0aGUgY3VycmVudCB0b29sIGhpbnRzKTpcbi0gdmFsaWQtc2tpbGw6IEEgdmFsaWQgdGVzdCBza2lsbCBmb3IgdW5pdCB0ZXN0aW5nXG4tIHdpdGgtYWxsLXJlc291cmNlczogQSBza2lsbCB3aXRoIHNjcmlwdHMsIHJlZmVyZW5jZXMsIGFuZCBhc3NldHNcbi0gd2l0aC1zY3JpcHRzOiBBIHNraWxsIHRoYXQgaW5jbHVkZXMgZXhlY3V0YWJsZSBzY3JpcHRzXG5cbk5vdGVzOlxuLSBJbnZhbGlkX05hbWU6IHBsYWNlaG9sZGVyIHNob3dpbmcgYW4gaW52YWxpZCBuYW1lIGZvcm1hdFxuLSBtaXNzaW5nLWRlc2NyaXB0aW9uOiBwbGFjZWhvbGRlciB3aXRoIG5vIGRlc2NyaXB0aW9uXG5cbklmIHlvdSB3YW50LCBJIGNhbiBsb2FkIGEgc3BlY2lmaWMgc2tpbGzigJlzIHJlc291cmNlcyBvciBydW4gaXQgZm9yIHlvdS4gV2hpY2ggb25lIHdvdWxkIHlvdSBsaWtlIHRvIHRyeT8iLAogICAgICAgICJyZWZ1c2FsIjogbnVsbCwKICAgICAgICAiYW5ub3RhdGlvbnMiOiBbXQogICAgICB9LAogICAgICAiZmluaXNoX3JlYXNvbiI6ICJzdG9wIgogICAgfQogIF0sCiAgInVzYWdlIjogewogICAgInByb21wdF90b2tlbnMiOiA0ODEsCiAgICAiY29tcGxldGlvbl90b2tlbnMiOiAxMjcwLAogICAgInRvdGFsX3Rva2VucyI6IDE3NTEsCiAgICAicHJvbXB0X3Rva2Vuc19kZXRhaWxzIjogewogICAgICAiY2FjaGVkX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwCiAgICB9LAogICAgImNvbXBsZXRpb25fdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJyZWFzb25pbmdfdG9rZW5zIjogMTE1MiwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAsCiAgICAgICJhY2NlcHRlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAsCiAgICAgICJyZWplY3RlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAKICAgIH0KICB9LAogICJzZXJ2aWNlX3RpZXIiOiAiZGVmYXVsdCIsCiAgInN5c3RlbV9maW5nZXJwcmludCI6IG51bGwKfQo=
-  recorded_at: Fri, 16 Jan 2026 05:30:13 GMT
+        ewogICJpZCI6ICJjaGF0Y21wbC1DeVd2Qk1ucnZWSUh4amVDY0pvZ2VyaVNYZm5yNyIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc2ODU0MjI2NSwKICAibW9kZWwiOiAiZ3B0LTUtbmFuby0yMDI1LTA4LTA3IiwKICAiY2hvaWNlcyI6IFsKICAgIHsKICAgICAgImluZGV4IjogMCwKICAgICAgIm1lc3NhZ2UiOiB7CiAgICAgICAgInJvbGUiOiAiYXNzaXN0YW50IiwKICAgICAgICAiY29udGVudCI6ICItIDIgKyAyID0gNFxuXG5BdmFpbGFibGUgc2tpbGxzOlxuLSB2YWxpZC1za2lsbCDigJQgQSB2YWxpZCB0ZXN0IHNraWxsIGZvciB1bml0IHRlc3Rpbmdcbi0gd2l0aC1hbGwtcmVzb3VyY2VzIOKAlCBBIHNraWxsIHdpdGggc2NyaXB0cywgcmVmZXJlbmNlcywgYW5kIGFzc2V0c1xuLSB3aXRoLXNjcmlwdHMg4oCUIEEgc2tpbGwgdGhhdCBpbmNsdWRlcyBleGVjdXRhYmxlIHNjcmlwdHNcblxuSWYgeW914oCZZCBsaWtlLCBJIGNhbiBsb2FkLCBydW4sIG9yIGluc3BlY3QgYW55IG9mIHRoZXNlIHNraWxscy4gVGVsbCBtZSB3aGljaCBvbmUgYW5kIHdoYXQgeW91IHdhbnQgdG8gZG8uIiwKICAgICAgICAicmVmdXNhbCI6IG51bGwsCiAgICAgICAgImFubm90YXRpb25zIjogW10KICAgICAgfSwKICAgICAgImZpbmlzaF9yZWFzb24iOiAic3RvcCIKICAgIH0KICBdLAogICJ1c2FnZSI6IHsKICAgICJwcm9tcHRfdG9rZW5zIjogNDgxLAogICAgImNvbXBsZXRpb25fdG9rZW5zIjogOTg4LAogICAgInRvdGFsX3Rva2VucyI6IDE0NjksCiAgICAicHJvbXB0X3Rva2Vuc19kZXRhaWxzIjogewogICAgICAiY2FjaGVkX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwCiAgICB9LAogICAgImNvbXBsZXRpb25fdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJyZWFzb25pbmdfdG9rZW5zIjogODk2LAogICAgICAiYXVkaW9fdG9rZW5zIjogMCwKICAgICAgImFjY2VwdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMCwKICAgICAgInJlamVjdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMAogICAgfQogIH0sCiAgInNlcnZpY2VfdGllciI6ICJkZWZhdWx0IiwKICAic3lzdGVtX2ZpbmdlcnByaW50IjogbnVsbAp9Cg==
+  recorded_at: Fri, 16 Jan 2026 05:44:34 GMT
 recorded_with: VCR 6.4.0

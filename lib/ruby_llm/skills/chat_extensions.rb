@@ -6,35 +6,34 @@ module RubyLlm
   module Skills
     # Extensions for RubyLLM::Chat to enable skill integration.
     #
-    # @example With default path
+    # @example Default (app/skills)
     #   chat.with_skills
     #
-    # @example With path
-    #   chat.with_skills("app/skills")
+    # @example Custom path
+    #   chat.with_skills(from: "lib/skills")
     #
-    # @example With multiple paths
-    #   chat.with_skills("app/skills", "app/commands")
+    # @example Multiple sources (auto-detected)
+    #   chat.with_skills(from: [
+    #     "app/skills",           # Directory
+    #     "extras/skills.zip",    # Zip file
+    #     current_user.skills     # ActiveRecord relation
+    #   ])
     #
-    # @example With loader
-    #   chat.with_skills(RubyLlm::Skills.from_directory("app/skills"))
-    #
-    # @example With array
-    #   chat.with_skills(["app/skills", "app/commands"])
+    # @example Filter skills
+    #   chat.with_skills(only: [:pdf_report])
     #
     module ChatExtensions
       # Add skills to this chat.
       #
-      # @param sources [String, Loader, Array] paths, loaders, or arrays of either
+      # @param from [String, Array, nil] source(s) - auto-detects type
+      # @param only [Array<Symbol, String>, nil] include only these skills
       # @return [self] for chaining
-      def with_skills(*sources)
-        sources = [RubyLlm::Skills.default_path] if sources.empty?
-        sources = sources.flatten
+      def with_skills(from: nil, only: nil)
+        sources = Array(from || RubyLlm::Skills.default_path)
+        loaders = sources.map { |s| to_loader(s) }
 
-        loader = if sources.length == 1
-          to_loader(sources.first)
-        else
-          RubyLlm::Skills.compose(*sources.map { |s| to_loader(s) })
-        end
+        loader = loaders.length == 1 ? loaders.first : RubyLlm::Skills.compose(*loaders)
+        loader = FilteredLoader.new(loader, only) if only
 
         skill_tool = RubyLlm::Skills::SkillTool.new(loader)
         with_tool(skill_tool)
@@ -43,24 +42,56 @@ module RubyLlm
       private
 
       def to_loader(source)
-        source.is_a?(String) ? RubyLlm::Skills.from_directory(source) : source
+        case source
+        when String
+          if source.end_with?(".zip")
+            RubyLlm::Skills.from_zip(source)
+          else
+            RubyLlm::Skills.from_directory(source)
+          end
+        when ->(s) { s.respond_to?(:to_a) && s.first&.respond_to?(:name) && s.first&.respond_to?(:content) }
+          RubyLlm::Skills.from_database(source)
+        else
+          source
+        end
+      end
+    end
+
+    # Simple wrapper that filters skills by name.
+    class FilteredLoader
+      def initialize(loader, only)
+        @loader = loader
+        @only = Array(only).map(&:to_s)
+      end
+
+      def list
+        @loader.list.select { |s| @only.include?(s.name) }
+      end
+
+      def find(name)
+        return nil unless @only.include?(name.to_s)
+        @loader.find(name)
+      end
+
+      def get(name)
+        raise NotFoundError, "Skill not found: #{name}" unless @only.include?(name.to_s)
+        @loader.get(name)
+      end
+
+      def exists?(name)
+        @only.include?(name.to_s) && @loader.exists?(name)
+      end
+
+      def reload!
+        @loader.reload!
+        self
       end
     end
 
     # Extensions for ActiveRecord models using acts_as_chat.
-    #
-    # @example
-    #   chat = Chat.create!(model: "gpt-4")
-    #   chat.with_skills
-    #   chat.ask("Generate a PDF report")
-    #
     module ActiveRecordExtensions
-      # Add skills to this chat.
-      #
-      # @param sources [String, Loader, Array] paths, loaders, or arrays of either
-      # @return [self] for chaining
-      def with_skills(*sources)
-        to_llm.with_skills(*sources)
+      def with_skills(from: nil, only: nil)
+        to_llm.with_skills(from: from, only: only)
         self
       end
     end

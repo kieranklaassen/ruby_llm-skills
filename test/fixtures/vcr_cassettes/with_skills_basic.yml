@@ -37,7 +37,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 16 Jan 2026 05:30:25 GMT
+      - Fri, 16 Jan 2026 05:45:08 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -49,13 +49,13 @@ http_interactions:
       Openai-Organization:
       - every-1
       Openai-Processing-Ms:
-      - '5935'
+      - '6457'
       Openai-Project:
       - proj_JsyAYubtMiaADRh0HSQAkspY
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '5957'
+      - '6479'
       X-Ratelimit-Limit-Requests:
       - '30000'
       X-Ratelimit-Limit-Tokens:
@@ -63,13 +63,13 @@ http_interactions:
       X-Ratelimit-Remaining-Requests:
       - '29999'
       X-Ratelimit-Remaining-Tokens:
-      - '179999982'
+      - '179999985'
       X-Ratelimit-Reset-Requests:
       - 2ms
       X-Ratelimit-Reset-Tokens:
       - 0s
       X-Request-Id:
-      - req_1cda21a77d374f76883d7b91980cacff
+      - req_fce1eab130804fc0af85c4d8fc06b162
       X-Openai-Proxy-Wasm:
       - v0.1
       Cf-Cache-Status:
@@ -81,16 +81,16 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9beb386218787c9d-LAX
+      - 9beb4decaca923d1-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CyWhXCMDQLF8FyUUTd1GNpFVUX7AY",
+          "id": "chatcmpl-CyWvmForEQLSCmWycdUWiZZIQyYOI",
           "object": "chat.completion",
-          "created": 1768541419,
+          "created": 1768542302,
           "model": "gpt-5-nano-2025-08-07",
           "choices": [
             {
@@ -100,7 +100,7 @@ http_interactions:
                 "content": null,
                 "tool_calls": [
                   {
-                    "id": "call_xlfThDYKPcCVEK6qj9RijLaS",
+                    "id": "call_XXhNSanq4QXjfrGBxd6zParo",
                     "type": "function",
                     "function": {
                       "name": "skill",
@@ -132,18 +132,18 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": null
         }
-  recorded_at: Fri, 16 Jan 2026 05:30:25 GMT
+  recorded_at: Fri, 16 Jan 2026 05:45:08 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
     body:
       encoding: UTF-8
       string: '{"model":"gpt-5-nano","messages":[{"role":"user","content":"I need
-        help with the valid-skill, can you load it?"},{"role":"assistant","tool_calls":[{"id":"call_xlfThDYKPcCVEK6qj9RijLaS","type":"function","function":{"name":"skill","arguments":"{\"command\":\"valid-skill\"}"}}]},{"role":"tool","content":"#
+        help with the valid-skill, can you load it?"},{"role":"assistant","tool_calls":[{"id":"call_XXhNSanq4QXjfrGBxd6zParo","type":"function","function":{"name":"skill","arguments":"{\"command\":\"valid-skill\"}"}}]},{"role":"tool","content":"#
         Skill: valid-skill\n\n# Valid Skill Instructions\n\nThis is a valid skill
         used for testing the RubyLLM::Skills gem.\n\n## Usage\n\nUse this skill when
         you need to test skill parsing and loading.\n\n## Steps\n\n1. Load the skill\n2.
-        Verify metadata\n3. Check content","tool_call_id":"call_xlfThDYKPcCVEK6qj9RijLaS"}],"stream":false,"tools":[{"type":"function","function":{"name":"skill","description":"Execute
+        Verify metadata\n3. Check content","tool_call_id":"call_XXhNSanq4QXjfrGBxd6zParo"}],"stream":false,"tools":[{"type":"function","function":{"name":"skill","description":"Execute
         a skill within the main conversation.\n\nWhen to use this tool:\n- When the
         user''s message starts with \"/\" followed by a skill name (e.g., \"/write-poem
         about robots\"), invoke this tool with that command and pass any text after
@@ -174,7 +174,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 16 Jan 2026 05:30:30 GMT
+      - Fri, 16 Jan 2026 05:45:13 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -186,13 +186,13 @@ http_interactions:
       Openai-Organization:
       - every-1
       Openai-Processing-Ms:
-      - '3952'
+      - '4549'
       Openai-Project:
       - proj_JsyAYubtMiaADRh0HSQAkspY
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '3978'
+      - '4572'
       X-Ratelimit-Limit-Requests:
       - '30000'
       X-Ratelimit-Limit-Tokens:
@@ -200,13 +200,13 @@ http_interactions:
       X-Ratelimit-Remaining-Requests:
       - '29999'
       X-Ratelimit-Remaining-Tokens:
-      - '179999919'
+      - '179999922'
       X-Ratelimit-Reset-Requests:
       - 2ms
       X-Ratelimit-Reset-Tokens:
       - 0s
       X-Request-Id:
-      - req_88ab0f317ab8450cacdc2824f6c3e051
+      - req_00ccd18e50f8410f9ec38737f65e6013
       X-Openai-Proxy-Wasm:
       - v0.1
       Cf-Cache-Status:
@@ -218,16 +218,16 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9beb38885e797bf5-LAX
+      - 9beb4e15fcf82aec-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CyWheNeEEVFrZvRBFJSnMpKTikdKZ",
+          "id": "chatcmpl-CyWvsldzshi0EkFmCx5zPD8LMoDgo",
           "object": "chat.completion",
-          "created": 1768541426,
+          "created": 1768542308,
           "model": "gpt-5-nano-2025-08-07",
           "choices": [
             {
@@ -237,7 +237,7 @@ http_interactions:
                 "content": null,
                 "tool_calls": [
                   {
-                    "id": "call_DrCQNQ98iEebXZKFT8KaaZUK",
+                    "id": "call_UMioeYaRQPxJVARh89vpYhIz",
                     "type": "function",
                     "function": {
                       "name": "skill",
@@ -253,14 +253,14 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 529,
-            "completion_tokens": 408,
-            "total_tokens": 937,
+            "completion_tokens": 472,
+            "total_tokens": 1001,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
-              "reasoning_tokens": 384,
+              "reasoning_tokens": 448,
               "audio_tokens": 0,
               "accepted_prediction_tokens": 0,
               "rejected_prediction_tokens": 0
@@ -269,22 +269,22 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": null
         }
-  recorded_at: Fri, 16 Jan 2026 05:30:30 GMT
+  recorded_at: Fri, 16 Jan 2026 05:45:13 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
     body:
       encoding: UTF-8
       string: '{"model":"gpt-5-nano","messages":[{"role":"user","content":"I need
-        help with the valid-skill, can you load it?"},{"role":"assistant","tool_calls":[{"id":"call_xlfThDYKPcCVEK6qj9RijLaS","type":"function","function":{"name":"skill","arguments":"{\"command\":\"valid-skill\"}"}}]},{"role":"tool","content":"#
+        help with the valid-skill, can you load it?"},{"role":"assistant","tool_calls":[{"id":"call_XXhNSanq4QXjfrGBxd6zParo","type":"function","function":{"name":"skill","arguments":"{\"command\":\"valid-skill\"}"}}]},{"role":"tool","content":"#
         Skill: valid-skill\n\n# Valid Skill Instructions\n\nThis is a valid skill
         used for testing the RubyLLM::Skills gem.\n\n## Usage\n\nUse this skill when
         you need to test skill parsing and loading.\n\n## Steps\n\n1. Load the skill\n2.
-        Verify metadata\n3. Check content","tool_call_id":"call_xlfThDYKPcCVEK6qj9RijLaS"},{"role":"assistant","tool_calls":[{"id":"call_DrCQNQ98iEebXZKFT8KaaZUK","type":"function","function":{"name":"skill","arguments":"{\"command\":\"valid-skill\"}"}}]},{"role":"tool","content":"#
+        Verify metadata\n3. Check content","tool_call_id":"call_XXhNSanq4QXjfrGBxd6zParo"},{"role":"assistant","tool_calls":[{"id":"call_UMioeYaRQPxJVARh89vpYhIz","type":"function","function":{"name":"skill","arguments":"{\"command\":\"valid-skill\"}"}}]},{"role":"tool","content":"#
         Skill: valid-skill\n\n# Valid Skill Instructions\n\nThis is a valid skill
         used for testing the RubyLLM::Skills gem.\n\n## Usage\n\nUse this skill when
         you need to test skill parsing and loading.\n\n## Steps\n\n1. Load the skill\n2.
-        Verify metadata\n3. Check content","tool_call_id":"call_DrCQNQ98iEebXZKFT8KaaZUK"}],"stream":false,"tools":[{"type":"function","function":{"name":"skill","description":"Execute
+        Verify metadata\n3. Check content","tool_call_id":"call_UMioeYaRQPxJVARh89vpYhIz"}],"stream":false,"tools":[{"type":"function","function":{"name":"skill","description":"Execute
         a skill within the main conversation.\n\nWhen to use this tool:\n- When the
         user''s message starts with \"/\" followed by a skill name (e.g., \"/write-poem
         about robots\"), invoke this tool with that command and pass any text after
@@ -315,7 +315,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 16 Jan 2026 05:30:41 GMT
+      - Fri, 16 Jan 2026 05:45:23 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -327,13 +327,13 @@ http_interactions:
       Openai-Organization:
       - every-1
       Openai-Processing-Ms:
-      - '11252'
+      - '10067'
       Openai-Project:
       - proj_JsyAYubtMiaADRh0HSQAkspY
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '11270'
+      - '10220'
       X-Ratelimit-Limit-Requests:
       - '30000'
       X-Ratelimit-Limit-Tokens:
@@ -347,7 +347,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 0s
       X-Request-Id:
-      - req_e2bd0bea2d6c4393a4886cc748a771d0
+      - req_60da5a6e0b144c139f0f0be45431f7aa
       X-Openai-Proxy-Wasm:
       - v0.1
       Cf-Cache-Status:
@@ -359,12 +359,46 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9beb38a29e004747-LAX
+      - 9beb4e340aaacbac-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
-      string: !binary |-
-        ewogICJpZCI6ICJjaGF0Y21wbC1DeVdoaTR4QVZrcDRONGVTNjd4ck1YR3l0VGh3aiIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc2ODU0MTQzMCwKICAibW9kZWwiOiAiZ3B0LTUtbmFuby0yMDI1LTA4LTA3IiwKICAiY2hvaWNlcyI6IFsKICAgIHsKICAgICAgImluZGV4IjogMCwKICAgICAgIm1lc3NhZ2UiOiB7CiAgICAgICAgInJvbGUiOiAiYXNzaXN0YW50IiwKICAgICAgICAiY29udGVudCI6ICJZZXPigJTigJx2YWxpZC1za2lsbOKAnSBpcyBsb2FkZWQuIEhlcmXigJlzIHdoYXQgdGhlIHNraWxsIGNvbnRhaW5zOlxuXG5Ta2lsbDogdmFsaWQtc2tpbGxcblxuRGVzY3JpcHRpb246XG5UaGlzIGlzIGEgdmFsaWQgc2tpbGwgdXNlZCBmb3IgdGVzdGluZyB0aGUgUnVieUxMTTo6U2tpbGxzIGdlbS5cblxuVXNhZ2U6XG5Vc2UgdGhpcyBza2lsbCB3aGVuIHlvdSBuZWVkIHRvIHRlc3Qgc2tpbGwgcGFyc2luZyBhbmQgbG9hZGluZy5cblxuU3RlcHM6XG4xLiBMb2FkIHRoZSBza2lsbFxuMi4gVmVyaWZ5IG1ldGFkYXRhXG4zLiBDaGVjayBjb250ZW50XG5cbldvdWxkIHlvdSBsaWtlIG1lIHRvIHJ1biB0aHJvdWdoIHRoZXNlIHN0ZXBzIG5vdywgb3IgcHVsbCBvdXQgc3BlY2lmaWMgZGV0YWlscyAoZS5nLiwgbmFtZSwgZGVzY3JpcHRpb24sIHVzYWdlKT8iLAogICAgICAgICJyZWZ1c2FsIjogbnVsbCwKICAgICAgICAiYW5ub3RhdGlvbnMiOiBbXQogICAgICB9LAogICAgICAiZmluaXNoX3JlYXNvbiI6ICJzdG9wIgogICAgfQogIF0sCiAgInVzYWdlIjogewogICAgInByb21wdF90b2tlbnMiOiA2MTksCiAgICAiY29tcGxldGlvbl90b2tlbnMiOiAxMDY5LAogICAgInRvdGFsX3Rva2VucyI6IDE2ODgsCiAgICAicHJvbXB0X3Rva2Vuc19kZXRhaWxzIjogewogICAgICAiY2FjaGVkX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwCiAgICB9LAogICAgImNvbXBsZXRpb25fdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJyZWFzb25pbmdfdG9rZW5zIjogOTYwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMCwKICAgICAgImFjY2VwdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMCwKICAgICAgInJlamVjdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMAogICAgfQogIH0sCiAgInNlcnZpY2VfdGllciI6ICJkZWZhdWx0IiwKICAic3lzdGVtX2ZpbmdlcnByaW50IjogbnVsbAp9Cg==
-  recorded_at: Fri, 16 Jan 2026 05:30:41 GMT
+      string: |
+        {
+          "id": "chatcmpl-CyWvxnu3Ta3BCzVIhw5lp9r70ub7S",
+          "object": "chat.completion",
+          "created": 1768542313,
+          "model": "gpt-5-nano-2025-08-07",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "Loaded: valid-skill\n\nMetadata (as inferred from the skill content):\n- Name: valid-skill\n- Description: This is a valid skill used for testing the RubyLLM::Skills gem.\n- Usage: Use this skill when you need to test skill parsing and loading.\n- Steps:\n  1) Load the skill\n  2) Verify metadata\n  3) Check content\n\nContent overview:\n- The skill is described as a valid test skill for unit testing skill parsing and loading.\n- It is intended to test parsing and loading of skills within the RubyLLM::Skills framework.\n\nWhat would you like to do next?\n- Verify metadata more formally (e.g., check for required fields).\n- Check or extract the full content programmatically.\n- Load a specific resource or asset associated with this skill (if you have a path).\n- Run a test to ensure the skill parsing/loading behaves as expected.",
+                "refusal": null,
+                "annotations": []
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 619,
+            "completion_tokens": 1156,
+            "total_tokens": 1775,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 960,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": null
+        }
+  recorded_at: Fri, 16 Jan 2026 05:45:23 GMT
 recorded_with: VCR 6.4.0

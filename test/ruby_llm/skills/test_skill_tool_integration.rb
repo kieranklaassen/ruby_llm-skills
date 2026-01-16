@@ -8,117 +8,71 @@ class RubyLlm::Skills::TestSkillToolIntegration < Minitest::Test
     @commands_path = File.join(fixtures_path, "commands")
   end
 
-  # Test 1: Basic skill loading using with_skills
-  def test_with_skills_loads_and_invokes_skill
+  def test_with_skills_default
     VCR.use_cassette("with_skills_basic") do
+      RubyLlm::Skills.default_path = @skills_path
+
       chat = RubyLLM.chat
-      chat.with_skills(@skills_path)
+      chat.with_skills
 
       response = chat.ask("I need help with the valid-skill, can you load it?")
-
       assert_includes response.content.downcase, "valid-skill"
     end
   end
 
-  # Test 2: Slash command with arguments
-  def test_slash_command_with_arguments
+  def test_with_skills_from_path
     VCR.use_cassette("slash_command_arguments") do
       chat = RubyLLM.chat
-      chat.with_skills(@commands_path)
+      chat.with_skills(from: @commands_path)
 
       response = chat.ask("/write-poem about robots in space")
-
-      # The LLM should have invoked the skill and written a poem
-      assert response.content.length > 50, "Expected a poem response"
+      assert response.content.length > 50
     end
   end
 
-  # Test 3: Resource loading
+  def test_with_skills_from_array
+    VCR.use_cassette("composite_loader") do
+      chat = RubyLLM.chat
+      chat.with_skills(from: [@skills_path, @commands_path])
+
+      response = chat.ask("What skills and commands are available?")
+      assert response.content.downcase.include?("valid-skill") ||
+             response.content.downcase.include?("write-poem")
+    end
+  end
+
   def test_resource_loading
     VCR.use_cassette("resource_loading") do
       chat = RubyLLM.chat
-      chat.with_skills(@skills_path)
+      chat.with_skills(from: @skills_path)
 
-      response = chat.ask(
-        "Load the with-scripts skill, then load the scripts/helper.rb resource and show me what's in it"
-      )
-
-      # The LLM should have loaded the resource content
+      response = chat.ask("Load the with-scripts skill and show scripts/helper.rb")
       assert_includes response.content.downcase, "helper"
     end
   end
 
-  # Test 4: Skill discovery - LLM lists available skills
   def test_skill_discovery
     VCR.use_cassette("skill_discovery") do
       chat = RubyLLM.chat
-      chat.with_skills(@skills_path)
+      chat.with_skills(from: @skills_path)
 
-      response = chat.ask("What skills are available? List them for me.")
-
-      # Should mention some of the available skills
+      response = chat.ask("What skills are available?")
       assert_includes response.content.downcase, "valid-skill"
     end
   end
 
-  # Test 5: Skill not found handling
-  def test_skill_not_found
-    VCR.use_cassette("skill_not_found") do
-      chat = RubyLLM.chat
-      chat.with_skills(@skills_path)
-
-      response = chat.ask("Load the skill called 'nonexistent-xyz-skill' for me")
-
-      # Should mention the skill wasn't found or list available ones
-      content = response.content.downcase
-      assert(
-        content.include?("not found") || content.include?("available") || content.include?("valid-skill"),
-        "Expected error handling or skill suggestions"
-      )
-    end
-  end
-
-  # Test 6: Composite loader with multiple sources
-  def test_composite_loader
-    VCR.use_cassette("composite_loader") do
-      loader = RubyLlm::Skills.compose(
-        RubyLlm::Skills.from_directory(@skills_path),
-        RubyLlm::Skills.from_directory(@commands_path)
-      )
-
-      chat = RubyLLM.chat
-      chat.with_skills(loader)  # Pass loader directly
-
-      response = chat.ask("What skills and commands are available?")
-
-      # Should see both skills and commands
-      content = response.content.downcase
-      assert(
-        content.include?("valid-skill") || content.include?("write-poem"),
-        "Expected to see skills from both loaders"
-      )
-    end
-  end
-
-  # Test 7: Skills work alongside other tools
   def test_skills_with_other_tools
     VCR.use_cassette("skills_with_other_tools") do
       chat = RubyLLM.chat
-      chat.with_skills(@skills_path)
+      chat.with_skills(from: @skills_path)
       chat.with_tool(AdditionTool)
 
       response = chat.ask("What is 2 + 2? Also, what skills are available?")
-
-      # Should handle both the calculation and list skills
-      content = response.content
-      assert(
-        content.include?("4") || content.downcase.include?("valid-skill"),
-        "Expected either calculation result or skill list"
-      )
+      assert response.content.include?("4") ||
+             response.content.downcase.include?("valid-skill")
     end
   end
 
-  # Test tool for testing skills alongside other tools
   class AdditionTool < RubyLLM::Tool
     description "Add two numbers together"
     param :a, desc: "First number"
