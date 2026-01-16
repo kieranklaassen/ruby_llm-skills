@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "skill_tool"
+
 module RubyLlm
   module Skills
     # Extensions for RubyLLM::Chat to enable skill integration.
@@ -41,9 +43,4 @@ module RubyLlm
       end
     end
   end
-end
-
-# Extend RubyLLM::Chat if available
-if defined?(RubyLlm::Chat)
-  RubyLlm::Chat.include(RubyLlm::Skills::ChatExtensions)
 end

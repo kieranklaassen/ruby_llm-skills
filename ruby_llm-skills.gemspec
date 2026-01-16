@@ -31,5 +31,6 @@ Gem::Specification.new do |spec|
   spec.executables = []
   spec.require_paths = ["lib"]
 
-  # No runtime dependencies - rubyzip is optional for ZipLoader
+  spec.add_dependency "ruby_llm", ">= 1.10"
+  # rubyzip is optional for ZipLoader
 end

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "ruby_llm"
+
 module RubyLlm
   module Skills
     # A RubyLLM Tool that enables progressive skill loading.
@@ -23,7 +25,11 @@ module RubyLlm
     #   # LLM sees available skills, calls skill_tool with name="pdf-report"
     #   # Tool returns full SKILL.md content for LLM to follow
     #
-    class SkillTool
+    class SkillTool < RubyLLM::Tool
+      description "Load a skill to get specialized instructions for a task."
+      param :skill_name, type: "string",
+        desc: "The name of the skill to load (from the available skills list)"
+
       attr_reader :loader
 
       # Initialize with a skill loader.
@@ -44,9 +50,10 @@ module RubyLlm
       #
       # @return [String] tool description with embedded skill metadata
       def description
+        base_description = self.class.description
         skills_xml = build_skills_xml
         <<~DESC.strip
-          Load a skill to get specialized instructions for a task.
+          #{base_description}
 
           Use this tool when the user's request matches one of the available skills.
           The tool returns the full skill instructions that you should follow.
@@ -55,27 +62,11 @@ module RubyLlm
         DESC
       end
 
-      # Parameter schema for the tool.
-      #
-      # @return [Hash] JSON Schema for parameters
-      def parameters
-        {
-          type: "object",
-          properties: {
-            skill_name: {
-              type: "string",
-              description: "The name of the skill to load (from the available skills list)"
-            }
-          },
-          required: ["skill_name"]
-        }
-      end
-
       # Execute the tool to load a skill's content.
       #
       # @param skill_name [String] name of skill to load
       # @return [String] skill content or error message
-      def call(skill_name:)
+      def execute(skill_name:)
         skill = @loader.find(skill_name)
 
         unless skill
@@ -86,11 +77,6 @@ module RubyLlm
         build_skill_response(skill)
       end
 
-      # Alternative execute method name for RubyLLM compatibility.
-      def execute(skill_name:)
-        call(skill_name: skill_name)
-      end
-
       # Convert to RubyLLM Tool-compatible format.
       #
       # @return [Hash] tool definition for RubyLLM
@@ -98,7 +84,7 @@ module RubyLlm
         {
           name: name,
           description: description,
-          parameters: parameters
+          parameters: params_schema
         }
       end
 

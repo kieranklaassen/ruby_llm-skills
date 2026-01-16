@@ -25,6 +25,7 @@ gem "rubyzip"
 
 ```ruby
 require "ruby_llm/skills"
+require "ruby_llm/skills/skill_tool"
 
 # Create a skill loader and tool
 loader = RubyLlm::Skills.from_directory("app/skills")
@@ -194,12 +195,14 @@ skill.virtual?              # True for database skills
 ### RubyLlm::Skills::SkillTool
 
 ```ruby
+require "ruby_llm/skills/skill_tool"
+
 tool = RubyLlm::Skills::SkillTool.new(loader)
 
 tool.name                   # "skill"
 tool.description            # Dynamic description with <available_skills>
 tool.parameters             # JSON Schema for parameters
-tool.call(skill_name: "x")  # Load and return skill content
+tool.call({ "skill_name" => "x" })  # Load and return skill content
 tool.to_tool_definition     # Hash for RubyLLM integration
 ```
 

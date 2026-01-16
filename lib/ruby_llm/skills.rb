@@ -7,9 +7,6 @@ require_relative "skills/validator"
 require_relative "skills/skill"
 require_relative "skills/loader"
 require_relative "skills/filesystem_loader"
-require_relative "skills/composite_loader"
-require_relative "skills/skill_tool"
-require_relative "skills/chat_extensions"
 
 # Load Rails integration when Rails is available
 require_relative "skills/railtie" if defined?(Rails::Railtie)
