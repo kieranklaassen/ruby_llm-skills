@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "ruby_llm"
+
 require_relative "skills/version"
 require_relative "skills/error"
 require_relative "skills/parser"
@@ -7,9 +9,13 @@ require_relative "skills/validator"
 require_relative "skills/skill"
 require_relative "skills/loader"
 require_relative "skills/filesystem_loader"
+require_relative "skills/chat_extensions"
 
 # Load Rails integration when Rails is available
 require_relative "skills/railtie" if defined?(Rails::Railtie)
+
+# Extend RubyLLM::Chat with skill methods
+RubyLLM::Chat.include(RubyLlm::Skills::ChatExtensions)
 
 module RubyLlm
   module Skills

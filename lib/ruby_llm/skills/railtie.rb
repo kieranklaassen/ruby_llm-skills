@@ -20,6 +20,15 @@ module RubyLlm
         end
       end
 
+      # Extend acts_as_chat models with skill methods
+      initializer "ruby_llm_skills.active_record" do
+        ActiveSupport.on_load(:active_record) do
+          if defined?(RubyLLM::ActiveRecord::ChatMethods)
+            RubyLLM::ActiveRecord::ChatMethods.include(RubyLlm::Skills::ActiveRecordExtensions)
+          end
+        end
+      end
+
       # Provide rake tasks
       rake_tasks do
         load File.expand_path("tasks/skills.rake", __dir__)

@@ -1,0 +1,370 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-5-nano","messages":[{"role":"user","content":"I need
+        help with the valid-skill, can you load it?"}],"stream":false,"tools":[{"type":"function","function":{"name":"skill","description":"Execute
+        a skill within the main conversation.\n\nWhen to use this tool:\n- When the
+        user''s message starts with \"/\" followed by a skill name (e.g., \"/write-poem
+        about robots\"), invoke this tool with that command and pass any text after
+        the command name as arguments\n- When the user''s request matches one of the
+        available skills below\n\nCall with command (and optional arguments) to get
+        the full skill instructions.\nCall with command and resource to load a specific
+        file (script, reference, or asset).\n\n<available_skills>\n  <skill>\n    <name>Invalid_Name</name>\n    <description>A
+        skill with an invalid name format</description>\n  </skill>\n  <skill>\n    <name>missing-description</name>\n    <description></description>\n  </skill>\n  <skill>\n    <name>valid-skill</name>\n    <description>A
+        valid test skill for unit testing</description>\n  </skill>\n  <skill>\n    <name>with-all-resources</name>\n    <description>A
+        skill with scripts, references, and assets</description>\n  </skill>\n  <skill>\n    <name>with-scripts</name>\n    <description>A
+        skill that includes executable scripts</description>\n  </skill>\n</available_skills>","parameters":{"type":"object","properties":{"command":{"type":"string","description":"The
+        skill name (e.g., ''pdf'' or ''write-poem'')"},"arguments":{"type":"string","description":"Arguments
+        passed after the command (e.g., ''/write-poem about robots'' passes ''about
+        robots'')"},"resource":{"type":"string","description":"Optional resource path
+        to load (e.g., ''scripts/helper.rb'', ''references/guide.md'')"}},"required":["command"],"additionalProperties":false,"strict":true}}}]}'
+    headers:
+      User-Agent:
+      - Faraday v2.14.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 16 Jan 2026 05:30:25 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - every-1
+      Openai-Processing-Ms:
+      - '5935'
+      Openai-Project:
+      - proj_JsyAYubtMiaADRh0HSQAkspY
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '5957'
+      X-Ratelimit-Limit-Requests:
+      - '30000'
+      X-Ratelimit-Limit-Tokens:
+      - '180000000'
+      X-Ratelimit-Remaining-Requests:
+      - '29999'
+      X-Ratelimit-Remaining-Tokens:
+      - '179999982'
+      X-Ratelimit-Reset-Requests:
+      - 2ms
+      X-Ratelimit-Reset-Tokens:
+      - 0s
+      X-Request-Id:
+      - req_1cda21a77d374f76883d7b91980cacff
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9beb386218787c9d-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CyWhXCMDQLF8FyUUTd1GNpFVUX7AY",
+          "object": "chat.completion",
+          "created": 1768541419,
+          "model": "gpt-5-nano-2025-08-07",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_xlfThDYKPcCVEK6qj9RijLaS",
+                    "type": "function",
+                    "function": {
+                      "name": "skill",
+                      "arguments": "{\"command\":\"valid-skill\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "finish_reason": "tool_calls"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 439,
+            "completion_tokens": 600,
+            "total_tokens": 1039,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 576,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": null
+        }
+  recorded_at: Fri, 16 Jan 2026 05:30:25 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-5-nano","messages":[{"role":"user","content":"I need
+        help with the valid-skill, can you load it?"},{"role":"assistant","tool_calls":[{"id":"call_xlfThDYKPcCVEK6qj9RijLaS","type":"function","function":{"name":"skill","arguments":"{\"command\":\"valid-skill\"}"}}]},{"role":"tool","content":"#
+        Skill: valid-skill\n\n# Valid Skill Instructions\n\nThis is a valid skill
+        used for testing the RubyLLM::Skills gem.\n\n## Usage\n\nUse this skill when
+        you need to test skill parsing and loading.\n\n## Steps\n\n1. Load the skill\n2.
+        Verify metadata\n3. Check content","tool_call_id":"call_xlfThDYKPcCVEK6qj9RijLaS"}],"stream":false,"tools":[{"type":"function","function":{"name":"skill","description":"Execute
+        a skill within the main conversation.\n\nWhen to use this tool:\n- When the
+        user''s message starts with \"/\" followed by a skill name (e.g., \"/write-poem
+        about robots\"), invoke this tool with that command and pass any text after
+        the command name as arguments\n- When the user''s request matches one of the
+        available skills below\n\nCall with command (and optional arguments) to get
+        the full skill instructions.\nCall with command and resource to load a specific
+        file (script, reference, or asset).\n\n<available_skills>\n  <skill>\n    <name>Invalid_Name</name>\n    <description>A
+        skill with an invalid name format</description>\n  </skill>\n  <skill>\n    <name>missing-description</name>\n    <description></description>\n  </skill>\n  <skill>\n    <name>valid-skill</name>\n    <description>A
+        valid test skill for unit testing</description>\n  </skill>\n  <skill>\n    <name>with-all-resources</name>\n    <description>A
+        skill with scripts, references, and assets</description>\n  </skill>\n  <skill>\n    <name>with-scripts</name>\n    <description>A
+        skill that includes executable scripts</description>\n  </skill>\n</available_skills>","parameters":{"type":"object","properties":{"command":{"type":"string","description":"The
+        skill name (e.g., ''pdf'' or ''write-poem'')"},"arguments":{"type":"string","description":"Arguments
+        passed after the command (e.g., ''/write-poem about robots'' passes ''about
+        robots'')"},"resource":{"type":"string","description":"Optional resource path
+        to load (e.g., ''scripts/helper.rb'', ''references/guide.md'')"}},"required":["command"],"additionalProperties":false,"strict":true}}}]}'
+    headers:
+      User-Agent:
+      - Faraday v2.14.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 16 Jan 2026 05:30:30 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - every-1
+      Openai-Processing-Ms:
+      - '3952'
+      Openai-Project:
+      - proj_JsyAYubtMiaADRh0HSQAkspY
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '3978'
+      X-Ratelimit-Limit-Requests:
+      - '30000'
+      X-Ratelimit-Limit-Tokens:
+      - '180000000'
+      X-Ratelimit-Remaining-Requests:
+      - '29999'
+      X-Ratelimit-Remaining-Tokens:
+      - '179999919'
+      X-Ratelimit-Reset-Requests:
+      - 2ms
+      X-Ratelimit-Reset-Tokens:
+      - 0s
+      X-Request-Id:
+      - req_88ab0f317ab8450cacdc2824f6c3e051
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9beb38885e797bf5-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CyWheNeEEVFrZvRBFJSnMpKTikdKZ",
+          "object": "chat.completion",
+          "created": 1768541426,
+          "model": "gpt-5-nano-2025-08-07",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_DrCQNQ98iEebXZKFT8KaaZUK",
+                    "type": "function",
+                    "function": {
+                      "name": "skill",
+                      "arguments": "{\"command\":\"valid-skill\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "finish_reason": "tool_calls"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 529,
+            "completion_tokens": 408,
+            "total_tokens": 937,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 384,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": null
+        }
+  recorded_at: Fri, 16 Jan 2026 05:30:30 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-5-nano","messages":[{"role":"user","content":"I need
+        help with the valid-skill, can you load it?"},{"role":"assistant","tool_calls":[{"id":"call_xlfThDYKPcCVEK6qj9RijLaS","type":"function","function":{"name":"skill","arguments":"{\"command\":\"valid-skill\"}"}}]},{"role":"tool","content":"#
+        Skill: valid-skill\n\n# Valid Skill Instructions\n\nThis is a valid skill
+        used for testing the RubyLLM::Skills gem.\n\n## Usage\n\nUse this skill when
+        you need to test skill parsing and loading.\n\n## Steps\n\n1. Load the skill\n2.
+        Verify metadata\n3. Check content","tool_call_id":"call_xlfThDYKPcCVEK6qj9RijLaS"},{"role":"assistant","tool_calls":[{"id":"call_DrCQNQ98iEebXZKFT8KaaZUK","type":"function","function":{"name":"skill","arguments":"{\"command\":\"valid-skill\"}"}}]},{"role":"tool","content":"#
+        Skill: valid-skill\n\n# Valid Skill Instructions\n\nThis is a valid skill
+        used for testing the RubyLLM::Skills gem.\n\n## Usage\n\nUse this skill when
+        you need to test skill parsing and loading.\n\n## Steps\n\n1. Load the skill\n2.
+        Verify metadata\n3. Check content","tool_call_id":"call_DrCQNQ98iEebXZKFT8KaaZUK"}],"stream":false,"tools":[{"type":"function","function":{"name":"skill","description":"Execute
+        a skill within the main conversation.\n\nWhen to use this tool:\n- When the
+        user''s message starts with \"/\" followed by a skill name (e.g., \"/write-poem
+        about robots\"), invoke this tool with that command and pass any text after
+        the command name as arguments\n- When the user''s request matches one of the
+        available skills below\n\nCall with command (and optional arguments) to get
+        the full skill instructions.\nCall with command and resource to load a specific
+        file (script, reference, or asset).\n\n<available_skills>\n  <skill>\n    <name>Invalid_Name</name>\n    <description>A
+        skill with an invalid name format</description>\n  </skill>\n  <skill>\n    <name>missing-description</name>\n    <description></description>\n  </skill>\n  <skill>\n    <name>valid-skill</name>\n    <description>A
+        valid test skill for unit testing</description>\n  </skill>\n  <skill>\n    <name>with-all-resources</name>\n    <description>A
+        skill with scripts, references, and assets</description>\n  </skill>\n  <skill>\n    <name>with-scripts</name>\n    <description>A
+        skill that includes executable scripts</description>\n  </skill>\n</available_skills>","parameters":{"type":"object","properties":{"command":{"type":"string","description":"The
+        skill name (e.g., ''pdf'' or ''write-poem'')"},"arguments":{"type":"string","description":"Arguments
+        passed after the command (e.g., ''/write-poem about robots'' passes ''about
+        robots'')"},"resource":{"type":"string","description":"Optional resource path
+        to load (e.g., ''scripts/helper.rb'', ''references/guide.md'')"}},"required":["command"],"additionalProperties":false,"strict":true}}}]}'
+    headers:
+      User-Agent:
+      - Faraday v2.14.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 16 Jan 2026 05:30:41 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - every-1
+      Openai-Processing-Ms:
+      - '11252'
+      Openai-Project:
+      - proj_JsyAYubtMiaADRh0HSQAkspY
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '11270'
+      X-Ratelimit-Limit-Requests:
+      - '30000'
+      X-Ratelimit-Limit-Tokens:
+      - '180000000'
+      X-Ratelimit-Remaining-Requests:
+      - '29999'
+      X-Ratelimit-Remaining-Tokens:
+      - '179999856'
+      X-Ratelimit-Reset-Requests:
+      - 2ms
+      X-Ratelimit-Reset-Tokens:
+      - 0s
+      X-Request-Id:
+      - req_e2bd0bea2d6c4393a4886cc748a771d0
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9beb38a29e004747-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        ewogICJpZCI6ICJjaGF0Y21wbC1DeVdoaTR4QVZrcDRONGVTNjd4ck1YR3l0VGh3aiIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc2ODU0MTQzMCwKICAibW9kZWwiOiAiZ3B0LTUtbmFuby0yMDI1LTA4LTA3IiwKICAiY2hvaWNlcyI6IFsKICAgIHsKICAgICAgImluZGV4IjogMCwKICAgICAgIm1lc3NhZ2UiOiB7CiAgICAgICAgInJvbGUiOiAiYXNzaXN0YW50IiwKICAgICAgICAiY29udGVudCI6ICJZZXPigJTigJx2YWxpZC1za2lsbOKAnSBpcyBsb2FkZWQuIEhlcmXigJlzIHdoYXQgdGhlIHNraWxsIGNvbnRhaW5zOlxuXG5Ta2lsbDogdmFsaWQtc2tpbGxcblxuRGVzY3JpcHRpb246XG5UaGlzIGlzIGEgdmFsaWQgc2tpbGwgdXNlZCBmb3IgdGVzdGluZyB0aGUgUnVieUxMTTo6U2tpbGxzIGdlbS5cblxuVXNhZ2U6XG5Vc2UgdGhpcyBza2lsbCB3aGVuIHlvdSBuZWVkIHRvIHRlc3Qgc2tpbGwgcGFyc2luZyBhbmQgbG9hZGluZy5cblxuU3RlcHM6XG4xLiBMb2FkIHRoZSBza2lsbFxuMi4gVmVyaWZ5IG1ldGFkYXRhXG4zLiBDaGVjayBjb250ZW50XG5cbldvdWxkIHlvdSBsaWtlIG1lIHRvIHJ1biB0aHJvdWdoIHRoZXNlIHN0ZXBzIG5vdywgb3IgcHVsbCBvdXQgc3BlY2lmaWMgZGV0YWlscyAoZS5nLiwgbmFtZSwgZGVzY3JpcHRpb24sIHVzYWdlKT8iLAogICAgICAgICJyZWZ1c2FsIjogbnVsbCwKICAgICAgICAiYW5ub3RhdGlvbnMiOiBbXQogICAgICB9LAogICAgICAiZmluaXNoX3JlYXNvbiI6ICJzdG9wIgogICAgfQogIF0sCiAgInVzYWdlIjogewogICAgInByb21wdF90b2tlbnMiOiA2MTksCiAgICAiY29tcGxldGlvbl90b2tlbnMiOiAxMDY5LAogICAgInRvdGFsX3Rva2VucyI6IDE2ODgsCiAgICAicHJvbXB0X3Rva2Vuc19kZXRhaWxzIjogewogICAgICAiY2FjaGVkX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwCiAgICB9LAogICAgImNvbXBsZXRpb25fdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJyZWFzb25pbmdfdG9rZW5zIjogOTYwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMCwKICAgICAgImFjY2VwdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMCwKICAgICAgInJlamVjdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMAogICAgfQogIH0sCiAgInNlcnZpY2VfdGllciI6ICJkZWZhdWx0IiwKICAic3lzdGVtX2ZpbmdlcnByaW50IjogbnVsbAp9Cg==
+  recorded_at: Fri, 16 Jan 2026 05:30:41 GMT
+recorded_with: VCR 6.4.0

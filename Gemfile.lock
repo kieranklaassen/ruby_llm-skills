@@ -7,9 +7,16 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    addressable (2.8.8)
+      public_suffix (>= 2.0.2, < 8.0)
     ast (2.4.3)
     base64 (0.3.0)
+    bigdecimal (4.0.1)
+    crack (1.0.1)
+      bigdecimal
+      rexml
     date (3.5.0)
+    dotenv (3.2.0)
     erb (6.0.0)
     event_stream_parser (1.0.0)
     faraday (2.14.0)
@@ -22,6 +29,7 @@ GEM
       net-http (~> 0.5)
     faraday-retry (2.4.0)
       faraday (~> 2.0)
+    hashdiff (1.2.1)
     io-console (0.8.1)
     irb (1.15.3)
       pp (>= 0.6.0)
@@ -47,6 +55,7 @@ GEM
     psych (5.2.6)
       date
       stringio
+    public_suffix (7.0.2)
     racc (1.8.1)
     rainbow (3.1.1)
     rake (13.3.1)
@@ -57,6 +66,7 @@ GEM
     regexp_parser (2.11.3)
     reline (0.6.3)
       io-console (~> 0.5)
+    rexml (3.4.4)
     rubocop (1.81.7)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
@@ -106,6 +116,11 @@ GEM
       unicode-emoji (~> 4.1)
     unicode-emoji (4.1.0)
     uri (1.1.1)
+    vcr (6.4.0)
+    webmock (3.26.1)
+      addressable (>= 2.8.0)
+      crack (>= 0.3.2)
+      hashdiff (>= 0.4.0, < 2.0.0)
     zeitwerk (2.7.4)
 
 PLATFORMS
@@ -114,12 +129,16 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  dotenv
   irb
   minitest (~> 5.16)
   rake (~> 13.0)
+  ruby_llm
   ruby_llm-skills!
   rubyzip (~> 2.3)
   standard (~> 1.3)
+  vcr
+  webmock
 
 BUNDLED WITH
    2.6.5

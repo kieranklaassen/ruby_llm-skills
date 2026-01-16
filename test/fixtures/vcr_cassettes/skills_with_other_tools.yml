@@ -1,0 +1,94 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-5-nano","messages":[{"role":"user","content":"What is
+        2 + 2? Also, what skills are available?"}],"stream":false,"tools":[{"type":"function","function":{"name":"skill","description":"Execute
+        a skill within the main conversation.\n\nWhen to use this tool:\n- When the
+        user''s message starts with \"/\" followed by a skill name (e.g., \"/write-poem
+        about robots\"), invoke this tool with that command and pass any text after
+        the command name as arguments\n- When the user''s request matches one of the
+        available skills below\n\nCall with command (and optional arguments) to get
+        the full skill instructions.\nCall with command and resource to load a specific
+        file (script, reference, or asset).\n\n<available_skills>\n  <skill>\n    <name>Invalid_Name</name>\n    <description>A
+        skill with an invalid name format</description>\n  </skill>\n  <skill>\n    <name>missing-description</name>\n    <description></description>\n  </skill>\n  <skill>\n    <name>valid-skill</name>\n    <description>A
+        valid test skill for unit testing</description>\n  </skill>\n  <skill>\n    <name>with-all-resources</name>\n    <description>A
+        skill with scripts, references, and assets</description>\n  </skill>\n  <skill>\n    <name>with-scripts</name>\n    <description>A
+        skill that includes executable scripts</description>\n  </skill>\n</available_skills>","parameters":{"type":"object","properties":{"command":{"type":"string","description":"The
+        skill name (e.g., ''pdf'' or ''write-poem'')"},"arguments":{"type":"string","description":"Arguments
+        passed after the command (e.g., ''/write-poem about robots'' passes ''about
+        robots'')"},"resource":{"type":"string","description":"Optional resource path
+        to load (e.g., ''scripts/helper.rb'', ''references/guide.md'')"}},"required":["command"],"additionalProperties":false,"strict":true}}},{"type":"function","function":{"name":"ruby_llm--skills--test_skill_tool_integration--addition","description":"Add
+        two numbers together","parameters":{"type":"object","properties":{"a":{"type":"string","description":"First
+        number"},"b":{"type":"string","description":"Second number"}},"required":["a","b"],"additionalProperties":false,"strict":true}}}]}'
+    headers:
+      User-Agent:
+      - Faraday v2.14.0
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 16 Jan 2026 05:30:13 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - every-1
+      Openai-Processing-Ms:
+      - '13634'
+      Openai-Project:
+      - proj_JsyAYubtMiaADRh0HSQAkspY
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '13654'
+      X-Ratelimit-Limit-Requests:
+      - '30000'
+      X-Ratelimit-Limit-Tokens:
+      - '180000000'
+      X-Ratelimit-Remaining-Requests:
+      - '29999'
+      X-Ratelimit-Remaining-Tokens:
+      - '179999985'
+      X-Ratelimit-Reset-Requests:
+      - 2ms
+      X-Ratelimit-Reset-Tokens:
+      - 0s
+      X-Request-Id:
+      - req_8ebcfeda48674ef7ab42123f27124c9b
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9beb37e25b962f09-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        ewogICJpZCI6ICJjaGF0Y21wbC1DeVdoRFFKMk1LUzhzNjI0UGlzS1gwYmhoVDhWWSIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc2ODU0MTM5OSwKICAibW9kZWwiOiAiZ3B0LTUtbmFuby0yMDI1LTA4LTA3IiwKICAiY2hvaWNlcyI6IFsKICAgIHsKICAgICAgImluZGV4IjogMCwKICAgICAgIm1lc3NhZ2UiOiB7CiAgICAgICAgInJvbGUiOiAiYXNzaXN0YW50IiwKICAgICAgICAiY29udGVudCI6ICItIDIgKyAyID0gNFxuXG5BdmFpbGFibGUgc2tpbGxzIChiYXNlZCBvbiB0aGUgY3VycmVudCB0b29sIGhpbnRzKTpcbi0gdmFsaWQtc2tpbGw6IEEgdmFsaWQgdGVzdCBza2lsbCBmb3IgdW5pdCB0ZXN0aW5nXG4tIHdpdGgtYWxsLXJlc291cmNlczogQSBza2lsbCB3aXRoIHNjcmlwdHMsIHJlZmVyZW5jZXMsIGFuZCBhc3NldHNcbi0gd2l0aC1zY3JpcHRzOiBBIHNraWxsIHRoYXQgaW5jbHVkZXMgZXhlY3V0YWJsZSBzY3JpcHRzXG5cbk5vdGVzOlxuLSBJbnZhbGlkX05hbWU6IHBsYWNlaG9sZGVyIHNob3dpbmcgYW4gaW52YWxpZCBuYW1lIGZvcm1hdFxuLSBtaXNzaW5nLWRlc2NyaXB0aW9uOiBwbGFjZWhvbGRlciB3aXRoIG5vIGRlc2NyaXB0aW9uXG5cbklmIHlvdSB3YW50LCBJIGNhbiBsb2FkIGEgc3BlY2lmaWMgc2tpbGzigJlzIHJlc291cmNlcyBvciBydW4gaXQgZm9yIHlvdS4gV2hpY2ggb25lIHdvdWxkIHlvdSBsaWtlIHRvIHRyeT8iLAogICAgICAgICJyZWZ1c2FsIjogbnVsbCwKICAgICAgICAiYW5ub3RhdGlvbnMiOiBbXQogICAgICB9LAogICAgICAiZmluaXNoX3JlYXNvbiI6ICJzdG9wIgogICAgfQogIF0sCiAgInVzYWdlIjogewogICAgInByb21wdF90b2tlbnMiOiA0ODEsCiAgICAiY29tcGxldGlvbl90b2tlbnMiOiAxMjcwLAogICAgInRvdGFsX3Rva2VucyI6IDE3NTEsCiAgICAicHJvbXB0X3Rva2Vuc19kZXRhaWxzIjogewogICAgICAiY2FjaGVkX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwCiAgICB9LAogICAgImNvbXBsZXRpb25fdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJyZWFzb25pbmdfdG9rZW5zIjogMTE1MiwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAsCiAgICAgICJhY2NlcHRlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAsCiAgICAgICJyZWplY3RlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAKICAgIH0KICB9LAogICJzZXJ2aWNlX3RpZXIiOiAiZGVmYXVsdCIsCiAgInN5c3RlbV9maW5nZXJwcmludCI6IG51bGwKfQo=
+  recorded_at: Fri, 16 Jan 2026 05:30:13 GMT
+recorded_with: VCR 6.4.0

@@ -14,3 +14,9 @@ gem "standard", "~> 1.3"
 
 # Optional dependencies for specific loaders
 gem "rubyzip", "~> 2.3"
+
+# Integration testing with real LLM
+gem "ruby_llm"
+gem "vcr"
+gem "webmock"
+gem "dotenv"

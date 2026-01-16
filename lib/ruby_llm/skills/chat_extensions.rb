@@ -10,7 +10,7 @@ module RubyLlm
     # providing a convenient API for adding skills to conversations.
     #
     # @example
-    #   chat = RubyLlm.chat
+    #   chat = RubyLLM.chat
     #   chat.with_skills("app/skills")
     #   chat.ask("Generate a PDF report")
     #
@@ -40,6 +40,40 @@ module RubyLlm
       def with_skill_loader(loader)
         skill_tool = RubyLlm::Skills::SkillTool.new(loader)
         with_tool(skill_tool)
+      end
+    end
+
+    # Extensions for ActiveRecord models using acts_as_chat.
+    #
+    # These methods delegate to the underlying RubyLLM::Chat instance,
+    # matching the pattern used by other with_* methods in ChatMethods.
+    #
+    # @example
+    #   class Chat < ApplicationRecord
+    #     acts_as_chat
+    #   end
+    #
+    #   chat = Chat.create!(model: "gpt-4")
+    #   chat.with_skills("app/skills")
+    #   chat.ask("Generate a PDF report")
+    #
+    module ActiveRecordExtensions
+      # Add skills from a directory to this chat.
+      #
+      # @param path [String] path to skills directory
+      # @return [self] for chaining
+      def with_skills(path = RubyLlm::Skills.default_path)
+        to_llm.with_skills(path)
+        self
+      end
+
+      # Add skills from a loader to this chat.
+      #
+      # @param loader [Loader] any skill loader
+      # @return [self] for chaining
+      def with_skill_loader(loader)
+        to_llm.with_skill_loader(loader)
+        self
       end
     end
   end

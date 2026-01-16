@@ -6,3 +6,7 @@
 /pkg/
 /spec/reports/
 /tmp/
+
+# Environment variables
+.env
+.env.local
