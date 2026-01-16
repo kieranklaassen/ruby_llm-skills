@@ -28,7 +28,9 @@ module RubyLlm
     class SkillTool < RubyLLM::Tool
       description "Execute a skill within the main conversation."
       param :command, type: "string",
-        desc: "The skill name (e.g., 'pdf' or 'xlsx')"
+        desc: "The skill name (e.g., 'pdf' or 'write-poem')"
+      param :arguments, type: "string", required: false,
+        desc: "Arguments passed after the command (e.g., '/write-poem about robots' passes 'about robots')"
       param :resource, type: "string", required: false,
         desc: "Optional resource path to load (e.g., 'scripts/helper.rb', 'references/guide.md')"
 
@@ -58,10 +60,10 @@ module RubyLlm
           #{base_description}
 
           When to use this tool:
-          - When the user's message starts with "/" followed by a skill name (e.g., "/write-poem"), invoke this tool with that command
+          - When the user's message starts with "/" followed by a skill name (e.g., "/write-poem about robots"), invoke this tool with that command and pass any text after the command name as arguments
           - When the user's request matches one of the available skills below
 
-          Call with just command to get the full skill instructions.
+          Call with command (and optional arguments) to get the full skill instructions.
           Call with command and resource to load a specific file (script, reference, or asset).
 
           #{skills_xml}
@@ -71,9 +73,10 @@ module RubyLlm
       # Execute the tool to load a skill's content or a specific resource.
       #
       # @param command [String] name of skill to load
+      # @param arguments [String, nil] optional arguments passed with the command
       # @param resource [String, nil] optional resource path within the skill
       # @return [String] skill content, resource content, or error message
-      def execute(command:, resource: nil)
+      def execute(command:, arguments: nil, resource: nil)
         skill = @loader.find(command)
 
         unless skill
@@ -84,7 +87,7 @@ module RubyLlm
         if resource
           load_resource(skill, resource)
         else
-          build_skill_response(skill)
+          build_skill_response(skill, arguments: arguments)
         end
       end
 
@@ -119,9 +122,12 @@ module RubyLlm
         xml_parts.join("\n")
       end
 
-      def build_skill_response(skill)
+      def build_skill_response(skill, arguments: nil)
         parts = []
         parts << "# Skill: #{skill.name}"
+        if arguments && !arguments.strip.empty?
+          parts << "# Arguments: #{arguments}"
+        end
         parts << ""
         parts << skill.content
         parts << ""

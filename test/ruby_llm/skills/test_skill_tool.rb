@@ -249,6 +249,41 @@ class RubyLlm::Skills::TestSkillTool < Minitest::Test
     assert_includes result, "assets/template.txt"
   end
 
+  # Arguments tests
+
+  def test_parameters_include_optional_arguments
+    params = @tool.params_schema
+
+    assert params["properties"].key?("arguments")
+    assert_equal "string", params["properties"]["arguments"]["type"]
+    refute_includes params["required"], "arguments"
+  end
+
+  def test_call_with_arguments_includes_arguments_in_response
+    result = @tool.call({"command" => "valid-skill", "arguments" => "about robots"})
+
+    assert_includes result, "# Skill: valid-skill"
+    assert_includes result, "# Arguments: about robots"
+  end
+
+  def test_call_without_arguments_omits_arguments_section
+    result = @tool.call({"command" => "valid-skill"})
+
+    refute_includes result, "# Arguments:"
+  end
+
+  def test_execute_with_arguments_keyword
+    result = @tool.execute(command: "valid-skill", arguments: "some topic")
+
+    assert_includes result, "# Arguments: some topic"
+  end
+
+  def test_description_mentions_arguments
+    description = @tool.description
+
+    assert_includes description, "arguments"
+  end
+
   # Mock classes for testing
   class MockLoader
     def initialize(skills)
