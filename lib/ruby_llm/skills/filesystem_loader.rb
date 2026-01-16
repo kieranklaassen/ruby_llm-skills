@@ -81,7 +81,7 @@ module RubyLlm
       end
 
       def log_warning(message)
-        RubyLlm::Skills.logger&.warn("Warning: #{message}")
+        warn(message)
       end
     end
   end

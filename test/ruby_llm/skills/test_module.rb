@@ -23,18 +23,6 @@ class RubyLlm::Skills::TestModule < Minitest::Test
     assert_equal "custom/skills", RubyLlm::Skills.default_path
   end
 
-  def test_logger_defaults_to_nil
-    assert_nil RubyLlm::Skills.logger
-  end
-
-  def test_logger_is_configurable
-    logger = Object.new
-    RubyLlm::Skills.logger = logger
-    assert_equal logger, RubyLlm::Skills.logger
-  ensure
-    RubyLlm::Skills.logger = nil
-  end
-
   # from_directory tests
   def test_from_directory_returns_filesystem_loader
     loader = RubyLlm::Skills.from_directory(@skills_path)

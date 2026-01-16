@@ -52,7 +52,7 @@ module RubyLlm
         @records.filter_map do |record|
           load_skill_from_record(record)
         rescue => e
-          warn "Warning: Failed to load skill from record: #{e.message}" if RubyLlm::Skills.logger
+          warn "Failed to load skill from record: #{e.message}"
           nil
         end
       end

@@ -20,7 +20,7 @@ RubyLLM::Chat.include(RubyLlm::Skills::ChatExtensions)
 module RubyLlm
   module Skills
     class << self
-      attr_accessor :default_path, :logger
+      attr_accessor :default_path
 
       # Load skills from a filesystem directory.
       #
