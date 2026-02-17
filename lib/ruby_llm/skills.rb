@@ -1,5 +1,19 @@
 # frozen_string_literal: true
 
+# RubyLLM 1.12.0 Agent uses `delegate` but doesn't require ActiveSupport.
+# Provide a minimal fallback for plain Ruby environments.
+unless Module.method_defined?(:delegate)
+  class Module
+    def delegate(*methods, to:)
+      methods.each do |method_name|
+        define_method(method_name) do |*args, **kwargs, &block|
+          public_send(to).public_send(method_name, *args, **kwargs, &block)
+        end
+      end
+    end
+  end
+end
+
 require "ruby_llm"
 
 require_relative "skills/version"
@@ -10,12 +24,14 @@ require_relative "skills/skill"
 require_relative "skills/loader"
 require_relative "skills/filesystem_loader"
 require_relative "skills/chat_extensions"
+require_relative "skills/agent_extensions"
 
 # Load Rails integration when Rails is available
 require_relative "skills/railtie" if defined?(Rails::Railtie)
 
 # Extend RubyLLM::Chat with skill methods
 RubyLLM::Chat.include(RubyLLM::Skills::ChatExtensions)
+RubyLLM::Agent.include(RubyLLM::Skills::AgentExtensions)
 
 module RubyLLM
   module Skills
