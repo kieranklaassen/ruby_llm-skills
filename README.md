@@ -48,6 +48,9 @@ agent.with_skills("extra/skills")
 agent.ask("What can you help with?")
 ```
 
+`agent.with_skills(...)` replaces the current skill tool configuration.
+To combine sources, pass all sources in a single `skills`/`with_skills` call.
+
 ## Creating Skills
 
 ```

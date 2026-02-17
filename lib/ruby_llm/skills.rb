@@ -4,11 +4,42 @@
 # Provide a minimal fallback for plain Ruby environments.
 unless Module.method_defined?(:delegate)
   class Module
-    def delegate(*methods, to:)
+    def delegate(*methods, to:, prefix: nil, allow_nil: false, private: false, **_options)
+      target_method = to.to_sym
+
       methods.each do |method_name|
-        define_method(method_name) do |*args, **kwargs, &block|
-          public_send(to).public_send(method_name, *args, **kwargs, &block)
+        delegated_method = delegated_method_name(method_name, target_method, prefix)
+
+        define_method(delegated_method) do |*args, **kwargs, &block|
+          target = public_send(target_method)
+          if target.nil?
+            return nil if allow_nil
+
+            raise NoMethodError,
+              "#{self.class}##{delegated_method} delegated to ##{target_method}, but ##{target_method} is nil"
+          end
+
+          if kwargs.empty?
+            target.public_send(method_name, *args, &block)
+          else
+            target.public_send(method_name, *args, **kwargs, &block)
+          end
         end
+
+        private delegated_method if binding.local_variable_get(:private)
+      end
+    end
+
+    private
+
+    def delegated_method_name(method_name, target_method, prefix)
+      case prefix
+      when true
+        :"#{target_method}_#{method_name}"
+      when String, Symbol
+        :"#{prefix}_#{method_name}"
+      else
+        method_name
       end
     end
   end

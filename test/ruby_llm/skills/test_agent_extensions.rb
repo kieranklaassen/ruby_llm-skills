@@ -8,6 +8,7 @@ class RubyLLM::Skills::TestAgentExtensions < Minitest::Test
       config.openai_api_key = ENV.fetch("OPENAI_API_KEY", "test-key")
     end
     @skills_path = File.join(fixtures_path, "skills")
+    @commands_path = File.join(fixtures_path, "commands")
   end
 
   # --- Class-level DSL ---
@@ -34,6 +35,18 @@ class RubyLLM::Skills::TestAgentExtensions < Minitest::Test
     end
 
     assert_equal ["app/skills", "app/commands"], agent_class.skills[:sources]
+  end
+
+  def test_skills_macro_flattens_array_variable_sources
+    paths = [@skills_path, @commands_path]
+    agent_class = Class.new(RubyLLM::Agent) do
+      model "gpt-5-nano"
+      skills paths
+    end
+
+    description = agent_class.chat.tools.fetch(:skill).description
+    assert_includes description, "<name>valid-skill</name>"
+    assert_includes description, "<name>write-poem</name>"
   end
 
   def test_skills_macro_with_block
@@ -164,6 +177,37 @@ class RubyLLM::Skills::TestAgentExtensions < Minitest::Test
     assert chat.tools.key?(:skill)
   end
 
+  def test_block_based_skills_with_nil_do_not_register_skill_tool
+    agent_class = Class.new(RubyLLM::Agent) do
+      model "gpt-5-nano"
+      skills { nil }
+    end
+
+    chat = agent_class.chat
+    refute chat.tools.key?(:skill)
+  end
+
+  def test_block_based_skills_with_empty_sources_do_not_register_skill_tool
+    agent_class = Class.new(RubyLLM::Agent) do
+      model "gpt-5-nano"
+      skills { [] }
+    end
+
+    chat = agent_class.chat
+    refute chat.tools.key?(:skill)
+  end
+
+  def test_block_based_skills_raise_descriptive_error_for_invalid_source
+    invalid_source = Object.new
+    agent_class = Class.new(RubyLLM::Agent) do
+      model "gpt-5-nano"
+      skills { invalid_source }
+    end
+
+    error = assert_raises(ArgumentError) { agent_class.chat }
+    assert_includes error.message, "Invalid skill source"
+  end
+
   # --- Instance-level with_skills ---
 
   def test_instance_with_skills_adds_to_chat
@@ -174,5 +218,24 @@ class RubyLLM::Skills::TestAgentExtensions < Minitest::Test
 
     assert_equal agent, result
     assert agent.chat.tools.key?(:skill)
+  end
+
+  def test_instance_with_skills_replaces_existing_skill_sources
+    path = @skills_path
+    commands_path = @commands_path
+    agent_class = Class.new(RubyLLM::Agent) do
+      model "gpt-5-nano"
+      skills path, only: ["valid-skill"]
+    end
+    agent = agent_class.new
+
+    before_description = agent.chat.tools.fetch(:skill).description
+    assert_includes before_description, "<name>valid-skill</name>"
+    refute_includes before_description, "<name>write-poem</name>"
+
+    agent.with_skills(commands_path)
+    after_description = agent.chat.tools.fetch(:skill).description
+    assert_includes after_description, "<name>write-poem</name>"
+    refute_includes after_description, "<name>valid-skill</name>"
   end
 end

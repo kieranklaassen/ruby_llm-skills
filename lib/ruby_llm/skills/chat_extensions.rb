@@ -41,11 +41,22 @@ module RubyLLM
         case source
         when String
           RubyLLM::Skills.from_directory(source)
-        when ->(s) { s.respond_to?(:to_a) && s.first&.respond_to?(:name) && s.first.respond_to?(:content) }
+        when ->(s) { database_collection_source?(s) }
           RubyLLM::Skills.from_database(source)
-        else
+        when ->(s) { loader_source?(s) }
           source
+        else
+          raise ArgumentError,
+            "Invalid skill source: #{source.class}. Expected String path, Loader, or record collection."
         end
+      end
+
+      def loader_source?(source)
+        source.respond_to?(:list) && source.respond_to?(:find)
+      end
+
+      def database_collection_source?(source)
+        source.respond_to?(:to_a) && source.first&.respond_to?(:name) && source.first.respond_to?(:content)
       end
     end
 
