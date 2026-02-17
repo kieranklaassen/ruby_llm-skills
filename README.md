@@ -31,6 +31,26 @@ chat.with_skills("app/skills", "app/commands") # multiple paths
 chat.with_skills("app/skills", user.skills)   # with database records
 ```
 
+### With RubyLLM::Agent (v1.12+)
+
+```ruby
+class SupportAgent < RubyLLM::Agent
+  model "gpt-5-nano"
+  instructions "You are a support assistant."
+  skills "app/skills", only: [:faq, :troubleshooting]
+end
+
+chat = SupportAgent.chat
+chat.ask("How do I reset my password?")
+
+agent = SupportAgent.new
+agent.with_skills("extra/skills")
+agent.ask("What can you help with?")
+```
+
+`agent.with_skills(...)` replaces the current skill tool configuration.
+To combine sources, pass all sources in a single `skills`/`with_skills` call.
+
 ## Creating Skills
 
 ```
