@@ -1,5 +1,5 @@
 ---
-status: ready
+status: complete
 priority: p1
 issue_id: "001"
 tags: [ruby_llm, agent, skills, dsl]
@@ -68,7 +68,7 @@ Implement AgentExtensions, wire it in the entrypoint, bump dependency to RubyLLM
 - [x] Update README with Agent usage
 - [x] Run tests and standardrb successfully
 - [x] Update plan checkboxes as tasks complete
-- [ ] Create commit and PR
+- [x] Create commit and PR
 
 ## Work Log
 
@@ -107,3 +107,15 @@ Implement AgentExtensions, wire it in the entrypoint, bump dependency to RubyLLM
 **Learnings:**
 - `ruby_llm` 1.12.0 requires `delegate` availability for `Agent` in non-Rails environments
 - Reusing existing VCR cassette (`with_skills_basic`) provides stable Agent integration coverage without new network recordings
+
+### 2026-02-17 - Ship
+
+**By:** Codex
+
+**Actions:**
+- Created commit `e2bb63f` with feature implementation
+- Pushed branch `feat/agent-skills-dsl-integration`
+- Opened PR: https://github.com/kieranklaassen/ruby_llm-skills/pull/2
+
+**Learnings:**
+- Existing untracked local artifacts can trigger GH CLI \"uncommitted change\" warnings without blocking PR creation
