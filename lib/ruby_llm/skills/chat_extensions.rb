@@ -56,7 +56,14 @@ module RubyLLM
       end
 
       def database_collection_source?(source)
-        source.respond_to?(:to_a) && source.first&.respond_to?(:name) && source.first.respond_to?(:content)
+        return false unless source.respond_to?(:to_a)
+
+        # ActiveRecord relations/CollectionProxy: recognizable even when empty
+        return true if source.respond_to?(:klass) && source.respond_to?(:where_values_hash)
+
+        # Generic collections: check first record for skill interface
+        first = source.first
+        first&.respond_to?(:name) && first.respond_to?(:content)
       end
     end
 

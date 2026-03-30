@@ -197,6 +197,23 @@ class RubyLLM::Skills::TestAgentExtensions < Minitest::Test
     refute chat.tools.key?(:skill)
   end
 
+  def test_block_based_skills_with_empty_activerecord_like_collection_do_not_register_skill_tool
+    # Simulate an empty ActiveRecord::CollectionProxy (responds to :klass and :where_values_hash)
+    empty_relation = Object.new
+    empty_relation.define_singleton_method(:to_a) { [] }
+    empty_relation.define_singleton_method(:empty?) { true }
+    empty_relation.define_singleton_method(:klass) { Object }
+    empty_relation.define_singleton_method(:where_values_hash) { {} }
+
+    agent_class = Class.new(RubyLLM::Agent) do
+      model "gpt-5-nano"
+      skills { empty_relation }
+    end
+
+    chat = agent_class.chat
+    refute chat.tools.key?(:skill)
+  end
+
   def test_block_based_skills_raise_descriptive_error_for_invalid_source
     invalid_source = Object.new
     agent_class = Class.new(RubyLLM::Agent) do

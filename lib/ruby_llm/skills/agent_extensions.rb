@@ -60,7 +60,7 @@ module RubyLLM
           return [] if source.nil?
           return [source] if source.is_a?(String)
           return [source] if loader_source?(source)
-          return [source] if database_collection_source?(source)
+          return database_collection_or_empty(source) if database_collection_source?(source)
           return source.flat_map { |item| flatten_skill_sources(item) } if source.is_a?(Array)
 
           [source]
@@ -71,7 +71,22 @@ module RubyLLM
         end
 
         def database_collection_source?(source)
-          source.respond_to?(:to_a) && source.first&.respond_to?(:name) && source.first.respond_to?(:content)
+          return false unless source.respond_to?(:to_a)
+
+          # ActiveRecord relations/CollectionProxy: recognizable even when empty
+          return true if source.respond_to?(:klass) && source.respond_to?(:where_values_hash)
+
+          # Generic collections: check first record for skill interface
+          first = source.first
+          first&.respond_to?(:name) && first.respond_to?(:content)
+        end
+
+        # Return the collection as a source, or [] if empty (avoids registering
+        # a skill tool with an empty manifest).
+        def database_collection_or_empty(source)
+          return [] if source.respond_to?(:empty?) && source.empty?
+
+          [source]
         end
       end
 
