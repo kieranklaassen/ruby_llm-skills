@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "source_detection"
 require_relative "skill_tool"
 
 module RubyLLM
@@ -19,6 +20,8 @@ module RubyLLM
     #   chat.with_skills(only: [:pdf_report])
     #
     module ChatExtensions
+      include SourceDetection
+
       # Add skills to this chat.
       #
       # @param sources [Array] skill sources - auto-detects type (directory, zip, collection)
@@ -51,20 +54,6 @@ module RubyLLM
         end
       end
 
-      def loader_source?(source)
-        source.respond_to?(:list) && source.respond_to?(:find)
-      end
-
-      def database_collection_source?(source)
-        return false unless source.respond_to?(:to_a)
-
-        # ActiveRecord relations/CollectionProxy: recognizable even when empty
-        return true if source.respond_to?(:klass) && source.respond_to?(:where_values_hash)
-
-        # Generic collections: check first record for skill interface
-        first = source.first
-        first&.respond_to?(:name) && first.respond_to?(:content)
-      end
     end
 
     # Simple wrapper that filters skills by name.

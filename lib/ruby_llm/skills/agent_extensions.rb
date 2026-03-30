@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "source_detection"
+
 module RubyLLM
   module Skills
     # Extensions for RubyLLM::Agent to enable declarative skill configuration.
@@ -19,6 +21,8 @@ module RubyLLM
       REQUIRED_AGENT_SINGLETON_METHODS = %i[apply_configuration runtime_context llm_chat_for].freeze
 
       module ClassMethods
+        include SourceDetection
+
         def self.extended(base)
           base.instance_variable_set(:@skill_sources, nil)
           base.instance_variable_set(:@skill_only, nil)
@@ -60,31 +64,8 @@ module RubyLLM
           return [] if source.nil?
           return [source] if source.is_a?(String)
           return [source] if loader_source?(source)
-          return database_collection_or_empty(source) if database_collection_source?(source)
+          return source.empty? ? [] : [source] if database_collection_source?(source)
           return source.flat_map { |item| flatten_skill_sources(item) } if source.is_a?(Array)
-
-          [source]
-        end
-
-        def loader_source?(source)
-          source.respond_to?(:list) && source.respond_to?(:find)
-        end
-
-        def database_collection_source?(source)
-          return false unless source.respond_to?(:to_a)
-
-          # ActiveRecord relations/CollectionProxy: recognizable even when empty
-          return true if source.respond_to?(:klass) && source.respond_to?(:where_values_hash)
-
-          # Generic collections: check first record for skill interface
-          first = source.first
-          first&.respond_to?(:name) && first.respond_to?(:content)
-        end
-
-        # Return the collection as a source, or [] if empty (avoids registering
-        # a skill tool with an empty manifest).
-        def database_collection_or_empty(source)
-          return [] if source.respond_to?(:empty?) && source.empty?
 
           [source]
         end
