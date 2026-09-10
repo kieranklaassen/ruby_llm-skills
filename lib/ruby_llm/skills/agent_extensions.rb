@@ -87,7 +87,10 @@ module RubyLLM
         # RubyLLM 2.0 passes either a RubyLLM::Chat or an acts_as_chat record.
         # Both respond to #with_skills (ChatExtensions / ActiveRecordExtensions),
         # so skills apply directly to whatever the agent configured.
-        def apply_configuration(chat, input_values:, persist_instructions:)
+        #
+        # apply_configuration is a :nodoc: hook; **options forwards any keyword a
+        # later 2.x release adds so the patch fails at super, not before it.
+        def apply_configuration(chat, input_values: {}, **options)
           super
           runtime = runtime_context(chat: chat, inputs: input_values)
           apply_skills(chat, runtime)
