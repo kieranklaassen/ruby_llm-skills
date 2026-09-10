@@ -35,7 +35,7 @@ module RubyLLM
         loader = FilteredLoader.new(loader, only) if only
 
         skill_tool = RubyLLM::Skills::SkillTool.new(loader)
-        with_tool(skill_tool)
+        with_tools(skill_tool)
       end
 
       private
@@ -53,7 +53,6 @@ module RubyLLM
             "Invalid skill source: #{source.class}. Expected String path, Loader, or record collection."
         end
       end
-
     end
 
     # Simple wrapper that filters skills by name.

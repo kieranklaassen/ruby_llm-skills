@@ -18,7 +18,7 @@ module RubyLLM
     #   end
     #
     module AgentExtensions
-      REQUIRED_AGENT_SINGLETON_METHODS = %i[apply_configuration runtime_context llm_chat_for].freeze
+      REQUIRED_AGENT_SINGLETON_METHODS = %i[apply_configuration runtime_context].freeze
 
       module ClassMethods
         include SourceDetection
@@ -84,16 +84,18 @@ module RubyLLM
       end
 
       module ConfigurationPatch
-        private
-
-        def apply_configuration(chat_object, **kwargs)
+        # RubyLLM 2.0 passes either a RubyLLM::Chat or an acts_as_chat record.
+        # Both respond to #with_skills (ChatExtensions / ActiveRecordExtensions),
+        # so skills apply directly to whatever the agent configured.
+        def apply_configuration(chat, input_values:, persist_instructions:)
           super
-          input_values = kwargs[:input_values] || {}
-          runtime = runtime_context(chat: chat_object, inputs: input_values)
-          apply_skills(llm_chat_for(chat_object), runtime)
+          runtime = runtime_context(chat: chat, inputs: input_values)
+          apply_skills(chat, runtime)
         end
 
-        def apply_skills(llm_chat, runtime)
+        private
+
+        def apply_skills(chat, runtime)
           config = skills
           sources = config[:sources]
           return if sources.nil?
@@ -108,7 +110,7 @@ module RubyLLM
           return if normalized_sources.empty?
 
           validate_skill_sources!(normalized_sources)
-          llm_chat.with_skills(*normalized_sources, only: config[:only])
+          chat.with_skills(*normalized_sources, only: config[:only])
         end
 
         def validate_skill_sources!(sources)

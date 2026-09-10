@@ -66,7 +66,7 @@ class RubyLLM::Skills::TestSkillToolIntegration < Minitest::Test
     VCR.use_cassette("skills_with_other_tools") do
       chat = RubyLLM.chat
       chat.with_skills(@skills_path)
-      chat.with_tool(AdditionTool)
+      chat.with_tools(AdditionTool)
 
       response = chat.ask("What is 2 + 2? Also, what skills are available?")
       assert response.content.include?("4") ||
@@ -76,8 +76,8 @@ class RubyLLM::Skills::TestSkillToolIntegration < Minitest::Test
 
   class AdditionTool < RubyLLM::Tool
     description "Add two numbers together"
-    param :a, desc: "First number"
-    param :b, desc: "Second number"
+    parameter :a, description: "First number"
+    parameter :b, description: "Second number"
 
     def execute(a:, b:)
       (a.to_f + b.to_f).to_s
