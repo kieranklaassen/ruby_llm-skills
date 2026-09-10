@@ -225,6 +225,21 @@ class RubyLLM::Skills::TestAgentExtensions < Minitest::Test
     assert_includes error.message, "Invalid skill source"
   end
 
+  # --- Load-time compatibility check ---
+
+  def test_including_into_class_without_required_hooks_raises_load_error
+    incompatible_agent = Class.new do
+      def self.apply_configuration(chat, input_values:, persist_instructions:)
+      end
+    end
+
+    error = assert_raises(RubyLLM::Skills::LoadError) do
+      incompatible_agent.include(RubyLLM::Skills::AgentExtensions)
+    end
+    assert_includes error.message, "runtime_context"
+    refute_includes error.message, "apply_configuration"
+  end
+
   # --- Instance-level with_skills ---
 
   def test_instance_with_skills_adds_to_chat

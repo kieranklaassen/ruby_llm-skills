@@ -8,10 +8,12 @@ VCR.configure do |config|
   config.hook_into :webmock
   config.allow_http_connections_when_no_cassette = false
 
-  # Record mode: :once for first run, :none in CI
+  # Record mode: :once for first run, :none in CI.
+  # Cassettes were recorded on RubyLLM 1.x; 2.0 changes the tool payload
+  # (e.g. strict flags), so requests match on method and URI only.
   config.default_cassette_options = {
     record: ENV["CI"] ? :none : :once,
-    match_requests_on: [:method, :uri, :body]
+    match_requests_on: [:method, :uri]
   }
 
   # Filter sensitive API keys

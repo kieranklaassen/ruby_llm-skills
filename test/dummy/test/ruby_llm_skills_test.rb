@@ -32,4 +32,12 @@ class RubyLLMSkillsTest < ActiveSupport::TestCase
   test "skill tool is available" do
     assert defined?(RubyLLM::Skills::SkillTool), "SkillTool should be defined"
   end
+
+  test "railtie extends acts_as_chat models with with_skills" do
+    ActiveRecord::Base.name # loading Base fires the on_load(:active_record) hooks
+
+    assert RubyLLM::ActiveRecord::ChatMethods.include?(RubyLLM::Skills::ActiveRecordExtensions),
+      "RubyLLM::ActiveRecord::ChatMethods should include ActiveRecordExtensions"
+    assert RubyLLM::ActiveRecord::ChatMethods.method_defined?(:with_skills)
+  end
 end

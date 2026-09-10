@@ -9,8 +9,11 @@ Agent Skills for [RubyLLM](https://github.com/crmne/ruby_llm). Teach your AI how
 ## Installation
 
 ```ruby
+gem "ruby_llm", "2.0.0.rc2"
 gem "ruby_llm-skills"
 ```
+
+Requires RubyLLM 2.0 (`>= 2.0.0.rc2`). If you are still on RubyLLM 1.x, stay on `ruby_llm-skills ~> 0.3.0` and follow the [RubyLLM 2.0 upgrade guide](https://rubyllm.com/next/upgrading/) before upgrading both gems together.
 
 ## Quick Start
 
@@ -31,7 +34,7 @@ chat.with_skills("app/skills", "app/commands") # multiple paths
 chat.with_skills("app/skills", user.skills)   # with database records
 ```
 
-### With RubyLLM::Agent (v1.12+)
+### With RubyLLM::Agent
 
 ```ruby
 class SupportAgent < RubyLLM::Agent
@@ -127,7 +130,7 @@ bin/setup
 ### Running Tests
 
 ```bash
-bundle exec rake test        # Unit tests (151 tests)
+bundle exec rake test        # Unit tests (177 tests)
 bundle exec rake test_rails  # Rails integration tests (25+ tests)
 bundle exec rake test_all    # Both
 bundle exec rake             # Tests + linting

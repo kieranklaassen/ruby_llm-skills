@@ -18,6 +18,7 @@ class RubyLLM::Skills::TestSkillToolIntegration < Minitest::Test
 
       response = chat.ask("I need help with the valid-skill, can you load it?")
       assert_includes response.content.downcase, "valid-skill"
+      assert_tool_result chat, "# Skill: valid-skill"
     end
   end
 
@@ -49,6 +50,7 @@ class RubyLLM::Skills::TestSkillToolIntegration < Minitest::Test
 
       response = chat.ask("Load the with-scripts skill and show scripts/helper.rb")
       assert_includes response.content.downcase, "helper"
+      assert_tool_result chat, "# Resource: scripts/helper.rb"
     end
   end
 
@@ -66,7 +68,7 @@ class RubyLLM::Skills::TestSkillToolIntegration < Minitest::Test
     VCR.use_cassette("skills_with_other_tools") do
       chat = RubyLLM.chat
       chat.with_skills(@skills_path)
-      chat.with_tool(AdditionTool)
+      chat.with_tools(AdditionTool)
 
       response = chat.ask("What is 2 + 2? Also, what skills are available?")
       assert response.content.include?("4") ||
@@ -74,10 +76,20 @@ class RubyLLM::Skills::TestSkillToolIntegration < Minitest::Test
     end
   end
 
+  private
+
+  # The cassettes replay by method and URI, so the canned assistant reply does
+  # not prove the skill tool produced the right result. Check the tool message.
+  def assert_tool_result(chat, expected)
+    tool_messages = chat.messages.select { |message| message.role == :tool }
+    assert tool_messages.any? { |message| message.content.to_s.include?(expected) },
+      "Expected a tool result containing #{expected.inspect}, got: #{tool_messages.map(&:content).inspect}"
+  end
+
   class AdditionTool < RubyLLM::Tool
     description "Add two numbers together"
-    param :a, desc: "First number"
-    param :b, desc: "Second number"
+    parameter :a, description: "First number"
+    parameter :b, description: "Second number"
 
     def execute(a:, b:)
       (a.to_f + b.to_f).to_s

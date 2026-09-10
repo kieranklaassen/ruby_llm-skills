@@ -27,27 +27,27 @@ module RubyLLM
     #
     class SkillTool < RubyLLM::Tool
       description "Execute a skill within the main conversation."
-      param :command, type: "string",
-        desc: "The skill name (e.g., 'pdf' or 'write-poem')"
-      param :arguments, type: "string", required: false,
-        desc: "Arguments passed after the command (e.g., '/write-poem about robots' passes 'about robots')"
-      param :resource, type: "string", required: false,
-        desc: "Optional resource path to load (e.g., 'scripts/helper.rb', 'references/guide.md')"
+      parameter :command, type: "string",
+        description: "The skill name (e.g., 'pdf' or 'write-poem')"
+      parameter :arguments, type: "string", required: false,
+        description: "Arguments passed after the command (e.g., '/write-poem about robots' passes 'about robots')"
+      parameter :resource, type: "string", required: false,
+        description: "Optional resource path to load (e.g., 'scripts/helper.rb', 'references/guide.md')"
 
       attr_reader :loader
+
+      # Tool name for RubyLLM.
+      #
+      # @return [String] "skill"
+      def self.tool_name
+        "skill"
+      end
 
       # Initialize with a skill loader.
       #
       # @param loader [Loader] any loader (FilesystemLoader, ZipLoader, etc.)
       def initialize(loader)
         @loader = loader
-      end
-
-      # Tool name for RubyLLM.
-      #
-      # @return [String] "skill"
-      def name
-        "skill"
       end
 
       # Dynamic description including available skills.
@@ -98,7 +98,7 @@ module RubyLLM
         {
           name: name,
           description: description,
-          parameters: params_schema
+          parameters: parameters_schema
         }
       end
 

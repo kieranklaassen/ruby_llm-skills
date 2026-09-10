@@ -5,9 +5,12 @@ require "ruby_llm/skills"
 require "minitest/autorun"
 require_relative "support/vcr_configuration"
 
-# Configure RubyLLM for integration tests
+# Configure RubyLLM for integration tests.
+# The VCR cassettes were recorded against the Chat Completions endpoint;
+# RubyLLM 2.0 defaults OpenAI to the Responses API, so pin the protocol.
 RubyLLM.configure do |config|
   config.openai_api_key = ENV.fetch("OPENAI_API_KEY", "test-key")
+  config.openai_protocol = :chat_completions
 end
 
 # Use FixturesHelper from test_helper if not already defined
