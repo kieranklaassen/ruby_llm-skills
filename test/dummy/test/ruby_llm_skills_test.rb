@@ -34,7 +34,7 @@ class RubyLLMSkillsTest < ActiveSupport::TestCase
   end
 
   test "railtie extends acts_as_chat models with with_skills" do
-    ActiveRecord::Base.connection # ensure the on_load(:active_record) hooks have fired
+    ActiveRecord::Base.name # loading Base fires the on_load(:active_record) hooks
 
     assert RubyLLM::ActiveRecord::ChatMethods.include?(RubyLLM::Skills::ActiveRecordExtensions),
       "RubyLLM::ActiveRecord::ChatMethods should include ActiveRecordExtensions"
