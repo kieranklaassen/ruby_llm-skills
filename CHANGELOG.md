@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **Breaking:** requires RubyLLM 2.0 (`ruby_llm >= 2.0.0.rc2, < 3`); 1.x users should stay on 0.3.x
+- `SkillTool` declares parameters with the 2.0 `parameter`/`description:` DSL, exposes `parameters_schema`, and sets its name through `tool_name`
+- `Chat#with_skills` registers the skill tool via `Chat#with_tools` (2.0 removed `Chat#with_tool`)
+- `AgentExtensions` hooks the 2.0 `Agent.apply_configuration(chat, input_values:, persist_instructions:)` signature and applies skills to the chat or `acts_as_chat` record it receives
+- Integration tests pin `openai_protocol = :chat_completions` and match VCR cassettes on method and URI so the recorded 1.x interactions replay under 2.0
+
+### Removed
+
+- Global `Module#delegate` fallback and its compatibility test (2.0's `Agent` uses `Forwardable`)
+- Dependency on the removed `Agent.llm_chat_for` hook
+
+### Fixed
+
+- StandardRB `Layout/EmptyLinesAroundModuleBody` offense in `chat_extensions.rb` that failed CI
+
 ## [0.3.0] - 2026-02-17
 
 ### Added
