@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0.pre2] - 2026-09-14
+
+### Changed
+
+- Updated the RubyLLM 2.0 dependency floor and development locks from `2.0.0.rc2` to `2.0.0.rc3`
+- Verified the Agent Skills integration against RubyLLM 2.0.0.rc3; its Agent, Chat, and Tool APIs remain compatible with the 0.4 port
+
 ## [0.4.0.pre1] - 2026-09-10
 
 ### Changed

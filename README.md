@@ -9,11 +9,11 @@ Agent Skills for [RubyLLM](https://github.com/crmne/ruby_llm). Teach your AI how
 ## Installation
 
 ```ruby
-gem "ruby_llm", "2.0.0.rc2"
-gem "ruby_llm-skills", "0.4.0.pre1"
+gem "ruby_llm", "2.0.0.rc3"
+gem "ruby_llm-skills", "0.4.0.pre2"
 ```
 
-Requires RubyLLM 2.0 (`>= 2.0.0.rc2`). If you are still on RubyLLM 1.x, stay on `ruby_llm-skills ~> 0.3.0` and follow the [RubyLLM 2.0 upgrade guide](https://rubyllm.com/next/upgrading/) before upgrading both gems together.
+Requires RubyLLM 2.0 (`>= 2.0.0.rc3`). If you are still on RubyLLM 1.x, stay on `ruby_llm-skills ~> 0.3.0` and follow the [RubyLLM 2.0 upgrade guide](https://rubyllm.com/next/upgrading/) before upgrading both gems together.
 
 ## Quick Start
 
