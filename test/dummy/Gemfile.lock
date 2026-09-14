@@ -1,8 +1,8 @@
 PATH
   remote: ../..
   specs:
-    ruby_llm-skills (0.3.0)
-      ruby_llm (>= 2.0.0.rc2, < 3)
+    ruby_llm-skills (0.4.0.pre2)
+      ruby_llm (>= 2.0.0.rc3, < 3)
 
 GEM
   remote: https://rubygems.org/
@@ -215,7 +215,7 @@ GEM
       tsort
     reline (0.6.3)
       io-console (~> 0.5)
-    ruby_llm (2.0.0.rc2)
+    ruby_llm (2.0.0.rc3)
       base64
       event_stream_parser (~> 1)
       faraday (>= 1.10.0)

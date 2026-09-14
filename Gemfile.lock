@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    ruby_llm-skills (0.4.0.pre1)
-      ruby_llm (>= 2.0.0.rc2, < 3)
+    ruby_llm-skills (0.4.0.pre2)
+      ruby_llm (>= 2.0.0.rc3, < 3)
 
 GEM
   remote: https://rubygems.org/
@@ -86,7 +86,7 @@ GEM
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.38.0, < 2.0)
     ruby-progressbar (1.13.0)
-    ruby_llm (2.0.0.rc2)
+    ruby_llm (2.0.0.rc3)
       base64
       event_stream_parser (~> 1)
       faraday (>= 1.10.0)

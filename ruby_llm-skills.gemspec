@@ -31,6 +31,6 @@ Gem::Specification.new do |spec|
   spec.executables = []
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "ruby_llm", ">= 2.0.0.rc2", "< 3"
+  spec.add_dependency "ruby_llm", ">= 2.0.0.rc3", "< 3"
   # rubyzip is optional for ZipLoader
 end
