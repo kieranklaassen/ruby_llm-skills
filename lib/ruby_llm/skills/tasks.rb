@@ -7,5 +7,5 @@
 #
 require "ruby_llm/skills"
 
-load File.expand_path("skills/tasks/skills.rake", __dir__)
-load File.expand_path("skills/tasks/marketplaces.rake", __dir__)
+load File.expand_path("tasks/skills.rake", __dir__)
+load File.expand_path("tasks/marketplaces.rake", __dir__)
