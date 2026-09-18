@@ -209,6 +209,16 @@ class RubyLLM::Skills::Marketplace::TestFetcher < Minitest::Test
     assert_includes error.message, "sha256 mismatch"
   end
 
+  def test_archive_sources_keep_a_skills_only_root
+    files = plugin_fixture_files("basic", "plugins/notes")
+    assert_equal ["skills"], files.keys.map { |path| path.split("/").first }.uniq
+    stub_request(:get, "https://example.com/skills-only.tar.gz").to_return(status: 200, body: Tarball.write(files))
+    fetcher = Fetcher.for(Locator.parse("https://example.com/m.json"))
+    fetched = fetcher.source_tree(Manifest.archive("https://example.com/skills-only.tar.gz"), head: nil)
+    assert_equal files, fetched.files
+    assert_equal ["note-taking"], RubyLLM::Skills::Marketplace::Bundle.new(fetched.files, plugin_name: "notes").skill_names
+  end
+
   def test_unsupported_sources_cannot_be_fetched
     fetcher = Fetcher.for(Locator.parse(marketplace_fixture_path("mixed")))
     catalog = Manifest.discover(fetcher.catalog_files(fetcher.head))

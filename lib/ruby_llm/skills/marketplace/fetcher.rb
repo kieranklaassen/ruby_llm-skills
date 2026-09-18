@@ -112,11 +112,22 @@ module RubyLLM
             Fetched.new(files: strip_single_root(files), sha: digest, upstream_url: plugin_source.url)
           end
 
-          # An archive may carry the plugin at its top or one folder down.
+          PLUGIN_MARKERS = %w[skills/ commands/ agents/ .claude-plugin/ .codex-plugin/ .cursor-plugin/ SKILL.md plugin.json].freeze
+
+          # An archive may carry the plugin at its top or one folder down: a
+          # single root directory that itself holds a plugin marker (a
+          # `skills/` directory, a manifest, a root `SKILL.md`) is a wrapper
+          # and is stripped; a root that is the plugin's own `skills/` is not.
           def strip_single_root(files)
             roots = files.keys.map { |path| path.split("/", 2) }
             return files if roots.any? { |parts| parts.size == 1 } || roots.map(&:first).uniq.size != 1
             return files if PLUGIN_ROOTS.include?(roots.first.first)
+
+            root = roots.first.first
+            wrapper = PLUGIN_MARKERS.any? do |marker|
+              marker.end_with?("/") ? files.keys.any? { |path| path.start_with?("#{root}/#{marker}") } : files.key?("#{root}/#{marker}")
+            end
+            return files unless wrapper
 
             files.transform_keys { |path| path.split("/", 2).last }
           end

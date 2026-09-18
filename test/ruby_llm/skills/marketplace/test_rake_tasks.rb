@@ -29,6 +29,15 @@ class RubyLLM::Skills::Marketplace::TestRakeTasks < Minitest::Test
     assert_equal [], Rake::Task["skills:marketplaces:list"].prerequisites
   end
 
+  def test_the_plain_rakefile_entry_point_loads_every_task
+    Rake.application = Rake::Application.new
+    output, = capture_subprocess_io do
+      system(Gem.ruby, "-I", File.expand_path("../../../../lib", __dir__), "-e",
+        'require "rake"; Rake.application = Rake::Application.new; require "ruby_llm/skills/tasks"; puts Rake::Task.tasks.map(&:name).sort')
+    end
+    (TASKS + %w[skills:list skills:validate skills:show]).each { |name| assert_includes output.lines.map(&:strip), name }
+  end
+
   def test_add_install_list_update_and_remove
     out = run_task("skills:marketplaces:add", marketplace_fixture_path("basic"))
     assert_match(/Added basic from .* at [0-9a-f]{12}/, out)
