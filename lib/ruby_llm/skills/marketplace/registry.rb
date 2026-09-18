@@ -135,9 +135,7 @@ module RubyLLM
             wanted = only ? Array(only).map(&:to_s) : supported_plugin_names(record)
             install_plugins(record, wanted, result, reproduce: false)
           end
-          lockfile.save
-          reload!
-          result
+          finish(result)
         end
 
         # Moves marketplaces forward: re-resolves each ref, re-reads the
@@ -154,9 +152,7 @@ module RubyLLM
             wanted = only ? Array(only).map(&:to_s) : record.plugin_names
             install_plugins(record, wanted, result, reproduce: false)
           end
-          lockfile.save
-          reload!
-          result
+          finish(result)
         end
 
         # Deletes a marketplace's directory and lockfile entry.
@@ -190,7 +186,7 @@ module RubyLLM
         # @return [Loader]
         def loader
           loaders = installed.map { |plugin| FilesystemLoader.new(plugin.skills_path) }
-          (loaders.length == 1) ? loaders.first : CompositeLoader.new(loaders)
+          (loaders.length == 1) ? loaders.first : RubyLLM::Skills.compose(*loaders)
         end
 
         # Forget the cached lockfile so the next call re-reads it.
@@ -209,6 +205,12 @@ module RubyLLM
           @lockfile ||= Lockfile.load(lockfile_path)
         end
 
+        def finish(result)
+          lockfile.save
+          reload!
+          result
+        end
+
         def record(name)
           data = lockfile.marketplace(name)
           source = Locator::Source.from_h(data)
@@ -225,11 +227,19 @@ module RubyLLM
         end
 
         def marketplace_dir(name)
-          File.join(root, name)
+          File.join(root, safe_name(name))
         end
 
         def plugin_dir(marketplace, plugin)
-          File.join(marketplace_dir(marketplace), plugin)
+          File.join(marketplace_dir(marketplace), safe_name(plugin))
+        end
+
+        # Names come from marketplace files and the lockfile; only a kebab-case
+        # name may become a directory under the root.
+        def safe_name(name)
+          raise LockfileError, "unsafe name #{name.inspect}" unless name.to_s.match?(Manifest::NAME_PATTERN)
+
+          name.to_s
         end
 
         def cache_catalog!(name, files)

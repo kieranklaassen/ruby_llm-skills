@@ -75,5 +75,11 @@ class RubyLLM::Skills::Marketplace::TestLockfile < Minitest::Test
 
     File.write(scratch_lockfile, JSON.generate("version" => 1))
     assert_raises(LockfileError) { Lockfile.load(scratch_lockfile) }
+
+    File.write(scratch_lockfile, JSON.generate("version" => 1, "marketplaces" => {"m" => []}))
+    assert_raises(LockfileError) { Lockfile.load(scratch_lockfile) }
+
+    File.write(scratch_lockfile, JSON.generate("version" => 1, "marketplaces" => {"m" => {"plugins" => []}}))
+    assert_raises(LockfileError) { Lockfile.load(scratch_lockfile) }
   end
 end

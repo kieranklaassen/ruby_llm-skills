@@ -231,6 +231,14 @@ class RubyLLM::Skills::Marketplace::TestRegistry < Minitest::Test
     assert_equal [local_registry], agent_class.skills[:sources]
   end
 
+  def test_unsafe_lockfile_names_never_become_paths
+    File.write(scratch_lockfile, JSON.generate("version" => 1, "marketplaces" => {".." => {"kind" => "directory", "locator" => ".", "plugins" => {}}}))
+    assert_raises(RubyLLM::Skills::Marketplace::LockfileError) { registry.remove("..") }
+
+    File.write(scratch_lockfile, JSON.generate("version" => 1, "marketplaces" => {"m" => {"kind" => "directory", "locator" => ".", "plugins" => {"../x" => {}}}}))
+    assert_raises(RubyLLM::Skills::Marketplace::LockfileError) { Registry.new(root: scratch_root, lockfile: scratch_lockfile).installed }
+  end
+
   def test_default_root_and_lockfile
     default = RubyLLM::Skills.marketplaces
     assert_equal File.expand_path("vendor/skills"), default.root

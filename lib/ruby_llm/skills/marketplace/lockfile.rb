@@ -44,6 +44,10 @@ module RubyLLM
           marketplaces = data["marketplaces"]
           raise LockfileError, "#{path} has no marketplaces object" unless marketplaces.is_a?(Hash)
 
+          marketplaces.each do |name, entry|
+            raise LockfileError, "#{path}: marketplace #{name.inspect} is not an object" unless entry.is_a?(Hash)
+            raise LockfileError, "#{path}: marketplace #{name.inspect} has no plugins object" unless entry.fetch("plugins", {}).is_a?(Hash)
+          end
           new(path, marketplaces)
         rescue JSON::ParserError => e
           raise LockfileError, "#{path} is not valid JSON (#{e.message[0, 80]})"
