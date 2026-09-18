@@ -358,6 +358,7 @@ module RubyLLM
         def write_tree!(target, bundle)
           FileUtils.mkdir_p(File.dirname(target))
           scratch = File.join(File.dirname(target), "#{SCRATCH_PREFIX}#{File.basename(target)}-#{SecureRandom.hex(4)}")
+          FileUtils.mkdir_p(scratch)
           Tarball.write_directory(bundle.tree, scratch)
           FileUtils.rm_rf(target)
           File.rename(scratch, target)

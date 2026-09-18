@@ -58,6 +58,8 @@ module RubyLLM
           @skills = collect_skills + collect_commands
           check_skill_names!
           @agents = collect_agents
+          raise InvalidPluginError, "plugin #{@name} has no skills, commands or agents" if @skills.empty? && @agents.empty?
+
           relocate_references
           @tree_sha256 = Tarball.tree_sha256(@tree)
         end

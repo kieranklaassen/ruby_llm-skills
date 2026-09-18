@@ -69,8 +69,7 @@ module MarketplaceTestHelper
 
   # Stubs api.github.com, raw.githubusercontent.com and codeload.github.com
   # for +repo+ serving the fixture marketplace +fixture+ at +sha+.
-  def stub_github_marketplace(repo, fixture:, sha:, ref: "main", default_branch: "main", etag: nil)
-    files = marketplace_fixture_files(fixture)
+  def stub_github_marketplace(repo, sha:, fixture: nil, files: marketplace_fixture_files(fixture), ref: "main", default_branch: "main", etag: nil)
     stub_request(:get, "https://api.github.com/repos/#{repo}")
       .to_return(status: 200, body: JSON.generate("default_branch" => default_branch), headers: {"Content-Type" => "application/json"})
     stub_request(:get, "https://api.github.com/repos/#{repo}/commits/#{ref}")

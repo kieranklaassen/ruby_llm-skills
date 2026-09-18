@@ -189,10 +189,18 @@ class RubyLLM::Skills::Marketplace::TestBundle < Minitest::Test
 
   def test_manifest_must_be_json_and_may_be_the_agent_plugins_root_file
     assert_raises(InvalidPluginError) { Bundle.new({".claude-plugin/plugin.json" => "nope"}, plugin_name: "p") }
-    root = {"plugin.json" => JSON.generate("$schema" => "https://agent-plugins.org/schemas/plugin.json", "name" => "portable", "version" => "0.0.1")}
+    root = {
+      "plugin.json" => JSON.generate("$schema" => "https://agent-plugins.org/schemas/plugin.json", "name" => "portable", "version" => "0.0.1"),
+      "skills/portable/SKILL.md" => "---\nname: portable\ndescription: Portable plugin skill.\n---\n"
+    }
     plugin = Bundle.new(root)
     assert_equal "portable", plugin.name
     assert_equal "plugin.json", plugin.manifest_path
     assert_equal "0.0.1", plugin.version
+  end
+
+  def test_a_plugin_with_nothing_to_load_is_refused
+    error = assert_raises(InvalidPluginError) { Bundle.new({"README.md" => "x"}, plugin_name: "empty") }
+    assert_includes error.message, "no skills, commands or agents"
   end
 end
