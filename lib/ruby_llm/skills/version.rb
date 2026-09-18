@@ -2,6 +2,6 @@
 
 module RubyLLM
   module Skills
-    VERSION = "0.4.0.pre2"
+    VERSION = "0.5.0.pre1"
   end
 end
