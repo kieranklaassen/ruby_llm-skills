@@ -238,8 +238,9 @@ module RubyLLM
             subtree(files, subdir, source.locator)
           end
 
-          def tree_url(_sha, subdir)
-            File.join(root, subdir.to_s)
+          # A local folder has no public tree to link to.
+          def tree_url(_sha, _subdir)
+            nil
           end
         end
       end
