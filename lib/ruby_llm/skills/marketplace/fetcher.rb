@@ -35,10 +35,6 @@ module RubyLLM
         end
 
         class Base
-          # Directories that carry plugin content, so an archive holding only
-          # one of them is the plugin root rather than a wrapping folder.
-          PLUGIN_ROOTS = %w[skills commands agents].freeze
-
           attr_reader :source
 
           def initialize(source)
@@ -121,7 +117,6 @@ module RubyLLM
           def strip_single_root(files)
             roots = files.keys.map { |path| path.split("/", 2) }
             return files if roots.any? { |parts| parts.size == 1 } || roots.map(&:first).uniq.size != 1
-            return files if PLUGIN_ROOTS.include?(roots.first.first)
 
             root = roots.first.first
             wrapper = PLUGIN_MARKERS.any? do |marker|
