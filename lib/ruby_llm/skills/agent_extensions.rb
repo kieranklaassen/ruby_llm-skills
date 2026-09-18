@@ -63,7 +63,7 @@ module RubyLLM
         def flatten_skill_sources(source)
           return [] if source.nil?
           return [source] if source.is_a?(String)
-          return [source] if loader_source?(source)
+          return [source] if loader_source?(source) || marketplace_source?(source)
           return source.empty? ? [] : [source] if database_collection_source?(source)
           return source.flat_map { |item| flatten_skill_sources(item) } if source.is_a?(Array)
 
@@ -122,11 +122,11 @@ module RubyLLM
 
           invalid_types = invalid_sources.map { |source| source.class.name || source.class.to_s }.uniq.join(", ")
           raise ArgumentError,
-            "Invalid skill source(s): #{invalid_types}. Expected String path, Loader, or record collection."
+            "Invalid skill source(s): #{invalid_types}. Expected String path, Loader, marketplace registry, or record collection."
         end
 
         def valid_skill_source?(source)
-          source.is_a?(String) || loader_source?(source) || database_collection_source?(source)
+          source.is_a?(String) || loader_source?(source) || marketplace_source?(source) || database_collection_source?(source)
         end
       end
 

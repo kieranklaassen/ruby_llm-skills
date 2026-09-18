@@ -1,0 +1,10 @@
+{
+  "name": "broken",
+  "plugins": [
+    {
+      "name": "mismatch",
+      "description": "A skill whose frontmatter name does not match its directory.",
+      "source": "./mismatch"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "name": "mixed",
+  "owner": {"name": "Mixed Fixture"},
+  "plugins": [
+    {
+      "name": "npm-thing",
+      "description": "Published to npm, which cannot be fetched.",
+      "source": {"source": "npm", "package": "@acme/thing"}
+    },
+    {
+      "name": "remote",
+      "description": "Lives in another GitHub repository.",
+      "source": {"source": "github", "repo": "acme/remote", "ref": "main"}
+    },
+    {
+      "name": "pinned",
+      "description": "Pinned to a commit in another repository.",
+      "source": {"source": "github", "repo": "acme/remote", "sha": "0123456789abcdef0123456789abcdef01234567"}
+    },
+    {
+      "name": "badsha",
+      "description": "A malformed sha pin.",
+      "source": {"source": "github", "repo": "acme/remote", "sha": "nope"}
+    },
+    {
+      "name": "tarball",
+      "description": "A hosted archive.",
+      "source": {"source": "archive", "url": "https://example.com/plugins/tarball.tar.gz"}
+    },
+    {
+      "name": "zipped",
+      "description": "A zip archive, which is unsupported.",
+      "source": {"source": "archive", "url": "https://example.com/plugins/zipped.zip"}
+    },
+    {
+      "name": "elsewhere",
+      "description": "A git subdirectory on an unsupported host.",
+      "source": {"source": "git-subdir", "url": "https://bitbucket.org/acme/repo", "path": "plugins/x"}
+    },
+    {
+      "name": "loose",
+      "description": "A strict:false entry that is its own manifest.",
+      "version": "9.9.9",
+      "strict": false,
+      "source": {"source": "url", "url": "https://gitlab.com/acme/group/loose.git"}
+    }
+  ]
+}

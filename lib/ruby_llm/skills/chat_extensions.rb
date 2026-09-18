@@ -44,13 +44,15 @@ module RubyLLM
         case source
         when String
           RubyLLM::Skills.from_directory(source)
+        when ->(s) { marketplace_source?(s) }
+          source.loader
         when ->(s) { database_collection_source?(s) }
           RubyLLM::Skills.from_database(source)
         when ->(s) { loader_source?(s) }
           source
         else
           raise ArgumentError,
-            "Invalid skill source: #{source.class}. Expected String path, Loader, or record collection."
+            "Invalid skill source: #{source.class}. Expected String path, Loader, marketplace registry, or record collection."
         end
       end
     end

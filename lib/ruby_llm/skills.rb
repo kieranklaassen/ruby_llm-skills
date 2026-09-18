@@ -11,6 +11,7 @@ require_relative "skills/loader"
 require_relative "skills/filesystem_loader"
 require_relative "skills/chat_extensions"
 require_relative "skills/agent_extensions"
+require_relative "skills/marketplace"
 
 # Load Rails integration when Rails is available
 require_relative "skills/railtie" if defined?(Rails::Railtie)
@@ -72,6 +73,28 @@ module RubyLLM
       def compose(*loaders)
         require_relative "skills/composite_loader"
         CompositeLoader.new(loaders)
+      end
+
+      # The plugin marketplaces recorded in a lockfile and installed under a root.
+      #
+      # @param root [String] where plugins are installed (default: vendor/skills)
+      # @param lockfile [String] the lockfile (default: skills.lock.json)
+      # @return [Marketplace::Registry]
+      # @example
+      #   marketplaces = RubyLLM::Skills.marketplaces
+      #   marketplaces.add("EveryInc/compound-writing")
+      #   marketplaces.install("compound-writing")
+      def marketplaces(root: Marketplace.root, lockfile: Marketplace.lockfile)
+        Marketplace::Registry.new(root: root, lockfile: lockfile)
+      end
+
+      # Load the skills of every installed marketplace plugin.
+      #
+      # @return [Loader] loader over the installed plugins' skills
+      # @example
+      #   chat.with_skills("app/skills", RubyLLM::Skills.from_marketplaces)
+      def from_marketplaces(root: Marketplace.root, lockfile: Marketplace.lockfile)
+        marketplaces(root: root, lockfile: lockfile).loader
       end
     end
 

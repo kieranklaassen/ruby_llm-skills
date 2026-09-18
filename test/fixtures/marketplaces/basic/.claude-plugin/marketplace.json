@@ -1,0 +1,26 @@
+{
+  "name": "basic",
+  "owner": {
+    "name": "Fixture Owner",
+    "url": "https://example.com"
+  },
+  "metadata": {
+    "description": "A fixture marketplace with two relative plugins.",
+    "version": "0.1.0",
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "writing",
+      "description": "Drafting skills, a help command and a reviewer agent.",
+      "source": "writing",
+      "category": "writing",
+      "tags": ["fixture"]
+    },
+    {
+      "name": "notes",
+      "description": "A plugin with no manifest and no version.",
+      "source": "notes"
+    }
+  ]
+}
