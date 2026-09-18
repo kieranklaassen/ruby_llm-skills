@@ -21,7 +21,9 @@ module RubyLLM
         attr_accessor :max_archive_bytes, :max_file_bytes, :max_files, :max_skills
         attr_accessor :user_agent
         # Called with each URI hop of a URL a marketplace author supplied
-        # (a hosted marketplace.json, an archive source). Raise to refuse.
+        # (a hosted marketplace.json, an archive source). Raise to refuse;
+        # return an IP address string to pin the connection to the address
+        # that passed, so a DNS answer cannot change between check and connect.
         attr_accessor :url_guard
 
         def initialize

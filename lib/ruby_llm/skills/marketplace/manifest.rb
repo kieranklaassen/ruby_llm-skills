@@ -33,15 +33,16 @@ module RubyLLM
         OVERRIDE_FIELDS = %w[skills commands agents hooks mcpServers lspServers outputStyles].freeze
         MAX_BYTES = 10 * 1024 * 1024
 
-        # The parsed marketplace file.
-        Catalog = Data.define(:name, :display_name, :owner, :description, :version, :plugin_root, :plugins, :shape, :path, :raw) do
+        # The parsed marketplace file. +renames+ is the file's `{ "old" => "new" }`
+        # map of plugins renamed (or, with a nil value, removed) since earlier versions.
+        Catalog = Data.define(:name, :display_name, :owner, :description, :version, :plugin_root, :renames, :plugins, :shape, :path, :raw) do
           def plugin(name)
             plugins.find { |entry| entry.name == name.to_s }
           end
 
           def to_h
             {"name" => name, "display_name" => display_name, "owner" => owner, "description" => description,
-             "version" => version, "plugin_root" => plugin_root, "shape" => shape, "path" => path}
+             "version" => version, "plugin_root" => plugin_root, "renames" => renames, "shape" => shape, "path" => path}
           end
         end
 
@@ -107,7 +108,7 @@ module RubyLLM
             Catalog.new(name: name, display_name: display_name, owner: data["owner"].is_a?(Hash) ? data["owner"] : {},
               description: presence(data["description"] || metadata["description"]),
               version: presence(data["version"] || metadata["version"]),
-              plugin_root: plugin_root, plugins: plugins, shape: shape, path: path, raw: data)
+              plugin_root: plugin_root, renames: renames(data["renames"]), plugins: plugins, shape: shape, path: path, raw: data)
           rescue JSON::ParserError => e
             raise InvalidManifestError, "marketplace file is not valid JSON (#{e.message[0, 80]})"
           end
@@ -190,6 +191,18 @@ module RubyLLM
           def presence(value)
             text = value.to_s.strip
             text.empty? ? nil : text
+          end
+
+          # `{ "old" => "new" }`, keeping only well-formed names; a nil value marks a removal.
+          def renames(raw)
+            return {} unless raw.is_a?(Hash)
+
+            raw.each_with_object({}) do |(old, new), out|
+              valid_new = new.nil? || new.to_s.match?(NAME_PATTERN)
+              next unless old.to_s.match?(NAME_PATTERN) && valid_new
+
+              out[old.to_s] = new&.to_s
+            end
           end
 
           private

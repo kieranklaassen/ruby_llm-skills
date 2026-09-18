@@ -130,6 +130,15 @@ class RubyLLM::Skills::Marketplace::TestFetcher < Minitest::Test
     assert_requested :get, "https://api.github.com/repos/acme/remote/commits/dev", times: 1
   end
 
+  def test_github_release_decoration
+    repo = RubyLLM::Skills::Marketplace::GithubRepo.new("acme/skills")
+    stub_request(:get, "https://api.github.com/repos/acme/skills/releases/tags/v1.0.0")
+      .to_return(status: 200, body: JSON.generate("html_url" => "https://github.com/acme/skills/releases/tag/v1.0.0", "name" => "1.0.0", "published_at" => "2026-01-01T00:00:00Z"))
+    stub_request(:get, "https://api.github.com/repos/acme/skills/releases/tags/v9.9.9").to_return(status: 404, body: "{}")
+    assert_equal({"tag" => "v1.0.0", "url" => "https://github.com/acme/skills/releases/tag/v1.0.0", "name" => "1.0.0", "published_at" => "2026-01-01T00:00:00Z"}, repo.release("v1.0.0"))
+    assert_nil repo.release("v9.9.9")
+  end
+
   def test_github_rate_limit_and_errors_become_fetch_errors
     stub_request(:get, "https://api.github.com/repos/acme/skills/commits/main")
       .to_return(status: 403, body: "{}", headers: {"X-RateLimit-Remaining" => "0"})

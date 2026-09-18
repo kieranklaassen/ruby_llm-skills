@@ -107,6 +107,13 @@ class RubyLLM::Skills::Marketplace::TestManifest < Minitest::Test
     assert_raises(InvalidManifestError) { Manifest.parse("{}" * (Manifest::MAX_BYTES / 2 + 1)) }
   end
 
+  def test_renames_keep_well_formed_names_only
+    catalog = Manifest.parse({"name" => "m", "plugins" => [], "renames" => {"old-name" => "new-name", "gone" => nil, "Bad Name" => "x", "y" => "Bad Name"}})
+    assert_equal({"old-name" => "new-name", "gone" => nil}, catalog.renames)
+    assert_equal({}, Manifest.parse({"name" => "m", "plugins" => []}).renames)
+    assert_equal({}, Manifest.parse({"name" => "m", "plugins" => [], "renames" => ["nope"]}).renames)
+  end
+
   def test_plugin_source_round_trips_through_hashes
     source = Manifest.github("acme/repo", ref: "dev", subdir: "p")
     assert_equal source, Manifest::PluginSource.from_h(source.to_h)

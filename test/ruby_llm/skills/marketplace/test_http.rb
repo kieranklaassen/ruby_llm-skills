@@ -67,6 +67,16 @@ class RubyLLM::Skills::Marketplace::TestHttp < Minitest::Test
     assert_equal %w[example.com cdn.example.com], seen
   end
 
+  def test_a_url_guard_may_pin_the_connection_to_an_address
+    RubyLLM::Skills::Marketplace.config.url_guard = ->(_uri) { "203.0.113.7" }
+    pinned = nil
+    fake = Net::HTTP.new("example.com", 443)
+    fake.define_singleton_method(:ipaddr=) { |address| pinned = address }
+    stub_request(:get, "https://example.com/a").to_return(status: 200, body: "x")
+    Net::HTTP.stub(:new, fake) { Http.get("https://example.com/a", public: true) }
+    assert_equal "203.0.113.7", pinned
+  end
+
   def test_a_url_guard_that_raises_refuses_the_request
     RubyLLM::Skills::Marketplace.config.url_guard = ->(_uri) { raise FetchError, "private address" }
     error = assert_raises(FetchError) { Http.get("https://example.com/a", public: true) }

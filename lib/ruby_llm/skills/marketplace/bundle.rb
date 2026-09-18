@@ -36,7 +36,8 @@ module RubyLLM
           end
         end
 
-        attr_reader :name, :manifest, :manifest_path, :manifest_version, :entry, :tree, :skills, :agents,
+        # +files+ is the input tree as given (paths without a leading "./"); +tree+ the normalized output.
+        attr_reader :files, :name, :manifest, :manifest_path, :manifest_version, :entry, :tree, :skills, :agents,
           :unsupported, :unresolved_references, :tree_sha256
 
         # @param files [Hash{String => String}] the plugin root as `{ path => bytes }`

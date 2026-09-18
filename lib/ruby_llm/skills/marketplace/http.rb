@@ -48,8 +48,8 @@ module RubyLLM
             request_headers["If-None-Match"] = etag if etag
 
             (MAX_REDIRECTS + 1).times do
-              admit!(uri, hosts: hosts, public: public)
-              response = perform(uri, request_headers, max_bytes)
+              address = admit!(uri, hosts: hosts, public: public)
+              response = perform(uri, request_headers, max_bytes, address: address)
               location = response.headers["location"]
               return response unless response.status.between?(300, 399) && location
 
@@ -76,22 +76,26 @@ module RubyLLM
             raise FetchError, "invalid URL #{url.to_s.inspect}"
           end
 
+          # The address to connect to (nil: by name) once the hop is admitted.
           def admit!(uri, hosts:, public:)
             host = uri.host.to_s.downcase
             raise FetchError, "refusing #{uri}: not an https URL" unless uri.is_a?(URI::HTTPS) && !host.empty?
             raise FetchError, "refusing #{uri}: URLs with credentials are not allowed" if uri.userinfo
-            return if hosts.map(&:downcase).include?(host)
+            return nil if hosts.map(&:downcase).include?(host)
             raise FetchError, "refusing #{host.inspect}: not an allowlisted https host" unless public
 
-            Marketplace.config.url_guard&.call(uri)
+            address = Marketplace.config.url_guard&.call(uri)
+            address.is_a?(String) ? address : nil
           end
 
           # Streams the body and stops reading the moment it passes the cap,
           # so an upstream that answers with gigabytes never occupies more
-          # than the cap in memory.
-          def perform(uri, headers, max_bytes)
+          # than the cap in memory. Pinned to +address+ when given, Net::HTTP
+          # still names the host for SNI and the certificate check.
+          def perform(uri, headers, max_bytes, address: nil)
             body = String.new(encoding: Encoding::BINARY)
             http = Net::HTTP.new(uri.host, uri.port)
+            http.ipaddr = address if address
             http.use_ssl = true
             http.open_timeout = OPEN_TIMEOUT
             http.read_timeout = READ_TIMEOUT

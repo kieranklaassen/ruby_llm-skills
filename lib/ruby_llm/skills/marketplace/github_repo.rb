@@ -59,16 +59,25 @@ module RubyLLM
           response.body
         end
 
+        # `{ "tag" =>, "url" =>, "name" =>, "published_at" => }` for a tag that has a GitHub release, else nil.
+        def release(tag)
+          response = api("repos/#{repo}/releases/tags/#{ERB::Util.url_encode(tag)}", allow_not_found: true)
+          return nil if response.not_found?
+
+          data = Http.json(response)
+          {"tag" => tag, "url" => data["html_url"].to_s, "name" => data["name"].to_s, "published_at" => data["published_at"].to_s}
+        end
+
         def tree_url(sha, subdir = nil)
           ["https://github.com/#{repo}/tree/#{sha}", Manifest.presence(subdir)].compact.join("/")
         end
 
         private
 
-        def api(path, etag: nil, allow_not_modified: false)
+        def api(path, etag: nil, allow_not_modified: false, allow_not_found: false)
           response = Http.get("https://#{API}/#{path}", hosts: HOSTS, headers: headers.merge("Accept" => "application/vnd.github+json"),
             max_bytes: SMALL, etag: etag)
-          return response if response.success? || (allow_not_modified && response.not_modified?)
+          return response if response.success? || (allow_not_modified && response.not_modified?) || (allow_not_found && response.not_found?)
           if [403, 429].include?(response.status) && response.headers["x-ratelimit-remaining"].to_s == "0"
             raise FetchError, "GitHub rate limit reached for #{repo}"
           end
