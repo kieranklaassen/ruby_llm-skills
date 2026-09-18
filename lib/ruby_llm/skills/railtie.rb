@@ -10,6 +10,8 @@ module RubyLLM
     class Railtie < ::Rails::Railtie
       initializer "ruby_llm_skills.configure" do
         RubyLLM::Skills.default_path = Rails.root.join("app", "skills").to_s
+        RubyLLM::Skills::Marketplace.root = Rails.root.join(RubyLLM::Skills::Marketplace::DEFAULT_ROOT).to_s
+        RubyLLM::Skills::Marketplace.lockfile = Rails.root.join(RubyLLM::Skills::Marketplace::DEFAULT_LOCKFILE).to_s
       end
 
       # Add app/skills to autoload paths (before initialization)
@@ -32,6 +34,7 @@ module RubyLLM
       # Provide rake tasks
       rake_tasks do
         load File.expand_path("tasks/skills.rake", __dir__)
+        load File.expand_path("tasks/marketplaces.rake", __dir__)
       end
     end
   end

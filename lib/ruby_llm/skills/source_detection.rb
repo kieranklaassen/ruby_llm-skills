@@ -11,6 +11,11 @@ module RubyLLM
         source.respond_to?(:list) && source.respond_to?(:find)
       end
 
+      # A Marketplace::Registry: its installed plugins load through #loader.
+      def marketplace_source?(source)
+        source.respond_to?(:installed) && source.respond_to?(:loader)
+      end
+
       def database_collection_source?(source)
         return false unless source.respond_to?(:to_a)
 

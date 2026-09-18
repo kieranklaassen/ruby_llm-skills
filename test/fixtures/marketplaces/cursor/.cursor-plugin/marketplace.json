@@ -1,0 +1,13 @@
+{
+  "name": "cursor-market",
+  "owner": {"name": "Cursor Fixture"},
+  "metadata": {"version": "2.0.0"},
+  "plugins": [
+    {
+      "name": "cur",
+      "description": "A Cursor-shaped plugin entry.",
+      "version": "0.3.0",
+      "source": {"path": "./cur"}
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "codex-market",
+  "interface": {
+    "displayName": "Codex Market"
+  },
+  "plugins": [
+    {
+      "name": "tools",
+      "description": "A Codex-shaped plugin entry.",
+      "source": {"source": "local", "path": "./tools"},
+      "policy": {"installation": "available"}
+    }
+  ]
+}

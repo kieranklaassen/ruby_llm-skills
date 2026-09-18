@@ -92,6 +92,58 @@ chat.with_skills("app/skills", "app/commands")
 chat.ask "/write-poem about robots"
 ```
 
+## Marketplaces
+
+Instead of adding skills one by one, add a whole plugin marketplace. The gem reads Claude Code (`.claude-plugin/marketplace.json`), Codex (`.agents/plugins/marketplace.json`) and Cursor (`.cursor-plugin/marketplace.json`) marketplaces from a GitHub repository, a GitLab project, a hosted `marketplace.json` URL or a local directory, fetches plugins over HTTPS (never `git`), and normalizes each one into the `skills/` layout the loaders read.
+
+```ruby
+marketplaces = RubyLLM::Skills.marketplaces          # vendor/skills + skills.lock.json
+
+marketplaces.add("EveryInc/compound-writing")         # follows the default branch
+marketplaces.add("typesafe-ai/skills", ref: "v0.5.7") # pinned to a tag (or a commit sha)
+marketplaces.add("https://example.com/marketplace.json")
+
+marketplaces.plugins("compound-writing").map(&:name)  # what the marketplace lists
+marketplaces.install("compound-writing")              # every supported plugin
+marketplaces.install("typesafe-ai", only: ["typesafe"])
+
+marketplaces.update                                   # move unpinned marketplaces to their ref's head
+marketplaces.remove("typesafe-ai")
+
+chat.with_skills("app/skills", marketplaces)          # a registry is a skill source
+```
+
+Plugins land in `vendor/skills/<marketplace>/<plugin>/` with their `skills/` (directory skills plus `commands/*.md` as single-file skills) and `agents/`. Plugin-level files a skill references through `../../x` or `${CLAUDE_PLUGIN_ROOT}/x` are copied under `<skill>/.plugin/` so the skill tool can serve them. Hooks, MCP and LSP configuration, executables and workflows are never installed.
+
+`skills.lock.json` records every marketplace with its kind, locator, ref and resolved commit, and every plugin with its version (the plugin manifest's, else the entry's, else the commit), commit, tree hash, source and skill names. Commit both, and `RubyLLM::Skills.marketplaces.install` (no arguments) reproduces the same trees on another machine at the recorded commits. A marketplace added with a commit sha as `ref` never moves on `update`; a branch or tag ref does.
+
+```ruby
+RubyLLM::Skills.from_marketplaces                     # a loader over the installed plugins
+RubyLLM::Skills.marketplaces(root: "lib/skills/vendor", lockfile: "lib/skills/skills.lock.json")
+
+RubyLLM::Skills::Marketplace.configure do |config|
+  config.github_token = ENV["GITHUB_TOKEN"]           # the default; lifts the API rate limit
+  config.max_archive_bytes = 64 * 1024 * 1024         # per plugin archive; also max_file_bytes, max_files, max_skills
+  config.url_guard = ->(uri) { ... }                  # called per hop for URLs a marketplace author supplied
+end
+```
+
+`install` and `update` return a result with `installed`, `updated`, `unchanged`, `skipped` (unsupported sources, with the reason) and `errors` (per plugin); they raise only for an unknown marketplace or plugin name and for a marketplace that cannot be fetched at all.
+
+The same operations are Rake tasks, loaded by the Railtie or with `require "ruby_llm/skills/tasks"` in a plain Rakefile:
+
+```bash
+rake skills:marketplaces:add[EveryInc/compound-writing]
+rake skills:marketplaces:add[typesafe-ai/skills,v0.5.7]
+rake skills:marketplaces:list
+rake skills:marketplaces:plugins[compound-writing]
+rake skills:marketplaces:install[compound-writing]
+rake skills:marketplaces:install[compound-writing,cw-draft cw-line-edit]
+rake skills:marketplaces:install          # reproduce skills.lock.json
+rake skills:marketplaces:update
+rake skills:marketplaces:remove[compound-writing]
+```
+
 ## Database Skills
 
 Store skills or commands in your database:
@@ -130,7 +182,7 @@ bin/setup
 ### Running Tests
 
 ```bash
-bundle exec rake test        # Unit tests (177 tests)
+bundle exec rake test        # Unit tests (300+ tests)
 bundle exec rake test_rails  # Rails integration tests (25+ tests)
 bundle exec rake test_all    # Both
 bundle exec rake             # Tests + linting

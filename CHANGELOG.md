@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Plugin marketplaces as a skill source: `RubyLLM::Skills.marketplaces` returns a `Marketplace::Registry` that adds a Claude Code, Codex or Cursor marketplace from `owner/repo`, `owner/repo@ref`, a github.com or gitlab.com URL, a hosted `marketplace.json` URL or a local directory, lists its plugins, installs all or selected plugins under `vendor/skills/<marketplace>/<plugin>/`, updates and removes them
+- `skills.lock.json` records every marketplace (kind, locator, ref, resolved commit) and plugin (version, commit, tree sha256, source, skills); `Registry#install` with no arguments reproduces the lockfile at the recorded commits, and a marketplace pinned to a commit sha never moves on `update`
+- Plugin normalization: `skills/<name>/**` validated by the Agent Skills rules, `commands/*.md` as single-file skills, `agents/**/*.md` kept, plugin-level references relocated under `<skill>/.plugin/`, hooks, MCP, LSP, executables and workflows dropped, with caps on archive size, file size, file count and skill count
+- `RubyLLM::Skills.from_marketplaces` loader; `Chat#with_skills` and `Agent.skills` accept a registry as a source
+- `RubyLLM::Skills::Marketplace.configure` for the GitHub token, fetch caps and a `url_guard` hook for marketplace-author URLs
+- Rake tasks `skills:marketplaces:{add,list,plugins,install,update,remove}`, loaded by the Railtie or via `require "ruby_llm/skills/tasks"`
+
 ## [0.4.0.pre2] - 2026-09-14
 
 ### Changed
