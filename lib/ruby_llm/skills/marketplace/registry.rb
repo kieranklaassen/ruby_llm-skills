@@ -329,6 +329,7 @@ module RubyLLM
           end
 
           bundle = Bundle.new(fetched.files, entry: entry)
+          return result.skipped[key] = "no skills, commands or agents to install" if bundle.empty?
           if installed && installed.tree_sha256 == bundle.tree_sha256 && on_disk?(installed)
             lockfile.set_plugin(record.name, entry.name, plugin_data(entry, fetched, bundle))
             return result.unchanged << key

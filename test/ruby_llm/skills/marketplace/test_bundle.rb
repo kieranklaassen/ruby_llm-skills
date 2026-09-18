@@ -199,8 +199,10 @@ class RubyLLM::Skills::Marketplace::TestBundle < Minitest::Test
     assert_equal "0.0.1", plugin.version
   end
 
-  def test_a_plugin_with_nothing_to_load_is_refused
-    error = assert_raises(InvalidPluginError) { Bundle.new({"README.md" => "x"}, plugin_name: "empty") }
-    assert_includes error.message, "no skills, commands or agents"
+  def test_a_plugin_with_nothing_to_load_is_empty
+    plugin = Bundle.new({"README.md" => "x"}, plugin_name: "empty")
+    assert plugin.empty?
+    assert_equal({}, plugin.tree)
+    refute bundle.empty?
   end
 end

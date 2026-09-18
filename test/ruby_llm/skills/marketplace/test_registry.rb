@@ -92,6 +92,18 @@ class RubyLLM::Skills::Marketplace::TestRegistry < Minitest::Test
     assert_equal [], registry.installed
   end
 
+  def test_install_skips_a_plugin_with_nothing_to_load
+    upstream = copy_marketplace_fixture("basic")
+    FileUtils.rm_rf(Dir.glob(File.join(upstream, "plugins", "notes", "*")))
+    File.write(File.join(upstream, "plugins", "notes", "README.md"), "nothing here")
+    registry.add(upstream)
+    result = registry.install("basic")
+    assert result.success?
+    assert_equal ["basic/writing"], result.installed
+    assert_equal({"basic/notes" => "no skills, commands or agents to install"}, result.skipped)
+    refute File.exist?(File.join(scratch_root, "basic", "notes"))
+  end
+
   def test_install_collects_plugin_errors_and_leaves_no_tree
     registry.add(marketplace_fixture_path("broken"))
     result = registry.install("broken")
