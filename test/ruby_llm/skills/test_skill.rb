@@ -57,6 +57,13 @@ class RubyLLM::Skills::TestSkill < Minitest::Test
     assert_equal %w[Bash Read], skill.allowed_tools
   end
 
+  def test_allowed_tools_accepts_a_yaml_list
+    metadata = RubyLLM::Skills::Parser.parse_string("---\nname: test\nallowed-tools:\n  - Read\n  - Bash(git status)\n---\n")
+    skill = RubyLLM::Skills::Skill.new(path: @valid_skill_path, metadata: metadata)
+
+    assert_equal ["Read", "Bash(git status)"], skill.allowed_tools
+  end
+
   def test_allowed_tools_returns_empty_array_when_missing
     skill = RubyLLM::Skills::Skill.new(path: @valid_skill_path, metadata: {"name" => "test"})
     assert_equal [], skill.allowed_tools

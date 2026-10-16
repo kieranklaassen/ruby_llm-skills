@@ -61,7 +61,8 @@ module RubyLLM
 
       # @return [Array<String>] list of allowed tools (experimental)
       def allowed_tools
-        (@metadata["allowed-tools"] || "").split
+        tools = @metadata["allowed-tools"]
+        tools.is_a?(Array) ? tools.map(&:to_s) : tools.to_s.split
       end
 
       # Get the full SKILL.md content (body without frontmatter).
