@@ -19,7 +19,7 @@ class SkillGeneratorTest < Rails::Generators::TestCase
     run_generator ["pdf-report", "-d", "Generate PDF reports from data"]
 
     assert_file "app/skills/pdf-report/SKILL.md" do |content|
-      assert_match(/^name: pdf-report$/, content)
+      assert_match(/^name: "pdf-report"$/, content)
       assert_match(/^description: "Generate PDF reports from data"$/, content)
     end
   end
@@ -34,6 +34,16 @@ class SkillGeneratorTest < Rails::Generators::TestCase
       assert_equal "pr-review", metadata["name"]
       assert_equal description, metadata["description"]
       assert_equal license, metadata["license"]
+    end
+  end
+
+  test "names YAML reads as other types stay strings" do
+    %w[on 123 null true].each do |name|
+      run_generator [name]
+
+      skill = RubyLLM::Skills.load(Rails.root.join("tmp/generators/app/skills", name).to_s)
+      assert_equal name, skill.metadata["name"]
+      assert_predicate skill, :valid?
     end
   end
 
@@ -103,7 +113,7 @@ class SkillGeneratorTest < Rails::Generators::TestCase
 
     assert_directory "app/skills/my-skill-name"
     assert_file "app/skills/my-skill-name/SKILL.md" do |content|
-      assert_match(/^name: my-skill-name$/, content)
+      assert_match(/^name: "my-skill-name"$/, content)
     end
   end
 
@@ -113,7 +123,7 @@ class SkillGeneratorTest < Rails::Generators::TestCase
     # CamelCase is converted to snake_case by Rails, then to kebab-case
     assert_directory "app/skills/my-skill-name"
     assert_file "app/skills/my-skill-name/SKILL.md" do |content|
-      assert_match(/^name: my-skill-name$/, content)
+      assert_match(/^name: "my-skill-name"$/, content)
     end
   end
 
