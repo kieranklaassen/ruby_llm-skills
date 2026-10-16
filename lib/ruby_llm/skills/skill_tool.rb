@@ -137,19 +137,19 @@ module RubyLLM
 
         if skill.scripts.any?
           parts << "## Available Scripts"
-          skill.scripts.each { |s| parts << "- scripts/#{File.basename(s)}" }
+          skill.scripts.each { |s| parts << "- #{relative_path(skill, s)}" }
           parts << ""
         end
 
         if skill.references.any?
           parts << "## Available References"
-          skill.references.each { |r| parts << "- references/#{File.basename(r)}" }
+          skill.references.each { |r| parts << "- #{relative_path(skill, r)}" }
           parts << ""
         end
 
         if skill.assets.any?
           parts << "## Available Assets"
-          skill.assets.each { |a| parts << "- assets/#{File.basename(a)}" }
+          skill.assets.each { |a| parts << "- #{relative_path(skill, a)}" }
           parts << ""
         end
 
@@ -178,7 +178,7 @@ module RubyLLM
         return "Cannot load resources from virtual skills" if skill.virtual?
 
         # Prevent path traversal
-        if resource_path.include?("..") || resource_path.start_with?("/")
+        if resource_path.split("/").include?("..") || resource_path.start_with?("/")
           return "Invalid resource path: #{resource_path}"
         end
 
@@ -189,11 +189,20 @@ module RubyLLM
           return "Resource '#{resource_path}' not found in skill '#{skill.name}'. Available: #{available}"
         end
 
+        # A symlink may point outside the skill folder
+        unless File.realpath(full_path).start_with?("#{File.realpath(skill.path)}/")
+          return "Invalid resource path: #{resource_path}"
+        end
+
         unless File.file?(full_path)
           return "Resource '#{resource_path}' is not a file"
         end
 
-        content = File.read(full_path)
+        content = File.read(full_path, encoding: Encoding::UTF_8)
+        unless content.valid_encoding? && !content.include?("\0")
+          return "Resource '#{resource_path}' is not a text file and cannot be loaded as text"
+        end
+
         "# Resource: #{resource_path}\n\n#{content}"
       end
 
@@ -201,7 +210,11 @@ module RubyLLM
         resources = skill.scripts + skill.references + skill.assets
         return "none" if resources.empty?
 
-        resources.map { |r| r.sub("#{skill.path}/", "") }.join(", ")
+        resources.map { |r| relative_path(skill, r) }.join(", ")
+      end
+
+      def relative_path(skill, file)
+        file.delete_prefix("#{skill.path}/")
       end
     end
   end

@@ -36,22 +36,22 @@ module RubyLLM
 
       # @return [String] skill name from frontmatter
       def name
-        @metadata["name"]
+        string_field("name")
       end
 
       # @return [String] skill description from frontmatter
       def description
-        @metadata["description"]
+        string_field("description")
       end
 
       # @return [String, nil] license from frontmatter
       def license
-        @metadata["license"]
+        string_field("license")
       end
 
       # @return [String, nil] compatibility info from frontmatter
       def compatibility
-        @metadata["compatibility"]
+        string_field("compatibility")
       end
 
       # @return [Hash] custom metadata key-value pairs
@@ -61,7 +61,8 @@ module RubyLLM
 
       # @return [Array<String>] list of allowed tools (experimental)
       def allowed_tools
-        (@metadata["allowed-tools"] || "").split
+        tools = @metadata["allowed-tools"]
+        tools.is_a?(Array) ? tools.map(&:to_s) : tools.to_s.split
       end
 
       # Get the full SKILL.md content (body without frontmatter).
@@ -149,6 +150,11 @@ module RubyLLM
       end
 
       private
+
+      # YAML reads unquoted values such as 123 or true as non-strings.
+      def string_field(key)
+        @metadata[key]&.to_s
+      end
 
       def load_content
         return @metadata["__content__"] if @metadata["__content__"]

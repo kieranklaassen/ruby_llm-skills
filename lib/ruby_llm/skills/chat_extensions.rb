@@ -57,11 +57,14 @@ module RubyLLM
       end
     end
 
-    # Simple wrapper that filters skills by name.
+    # Simple wrapper that filters skills by name. A Symbol also matches the
+    # hyphenated name, so +:pdf_report+ selects the skill "pdf-report".
     class FilteredLoader
       def initialize(loader, only)
         @loader = loader
-        @only = Array(only).map(&:to_s)
+        @only = Array(only).flat_map do |name|
+          name.is_a?(Symbol) ? [name.to_s, name.to_s.tr("_", "-")] : [name.to_s]
+        end.uniq
       end
 
       def list

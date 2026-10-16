@@ -45,6 +45,16 @@ class RubyLLM::Skills::TestChatExtensions < Minitest::Test
     refute_includes skill_tool.description, "<name>with-scripts</name>"
   end
 
+  def test_with_skills_only_matches_underscored_symbols_to_hyphenated_names
+    chat = RubyLLM.chat(model: "gpt-5-nano").with_skills(@skills_path, only: [:valid_skill])
+    loader = chat.tools.fetch(:skill).loader
+
+    assert_equal ["valid-skill"], loader.list.map(&:name)
+    assert loader.exists?("valid-skill")
+    assert_equal "valid-skill", loader.get("valid-skill").name
+    refute loader.exists?("with-scripts")
+  end
+
   def test_with_skills_combines_multiple_sources
     chat = RubyLLM.chat(model: "gpt-5-nano").with_skills(@skills_path, @commands_path)
     description = chat.tools.fetch(:skill).description

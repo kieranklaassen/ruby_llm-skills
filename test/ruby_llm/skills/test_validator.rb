@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "tmpdir"
+require "fileutils"
 
 class RubyLLM::Skills::TestValidator < Minitest::Test
   def test_valid_skill_returns_no_errors
@@ -186,6 +188,26 @@ class RubyLLM::Skills::TestValidator < Minitest::Test
 
     refute skill.valid?
     assert_includes skill.errors, "description is required"
+  end
+
+  def test_numeric_name_and_description_are_read_as_strings
+    Dir.mktmpdir do |dir|
+      FileUtils.mkdir_p(File.join(dir, "123"))
+      File.write(File.join(dir, "123", "SKILL.md"), "---\nname: 123\ndescription: 2024\n---\nBody\n")
+      loader = RubyLLM::Skills.from_directory(dir)
+      skill = loader.list.first
+
+      assert_equal "123", skill.name
+      assert_equal "2024", skill.description
+      assert_empty skill.errors
+      assert_same skill, loader.find("123")
+    end
+  end
+
+  def test_non_scalar_name_is_a_validation_error
+    skill = build_skill(name: ["a", "b"], description: "Valid description")
+
+    assert_includes skill.errors, "name must be lowercase letters, numbers, and single hyphens (no leading/trailing hyphens)"
   end
 
   private

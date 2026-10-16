@@ -19,9 +19,40 @@ class SkillGeneratorTest < Rails::Generators::TestCase
     run_generator ["pdf-report", "-d", "Generate PDF reports from data"]
 
     assert_file "app/skills/pdf-report/SKILL.md" do |content|
-      assert_match(/^name: pdf-report$/, content)
-      assert_match(/^description: Generate PDF reports from data$/, content)
+      assert_match(/^name: "pdf-report"$/, content)
+      assert_match(/^description: "Generate PDF reports from data"$/, content)
     end
+  end
+
+  test "frontmatter round-trips values with YAML syntax in them" do
+    description = %(Review PRs: flags "risky" diffs #security. Use when asked\\told to review)
+    license = "MIT: see LICENSE #1"
+    run_generator ["pr-review", "-d", description, "-l", license]
+
+    assert_file "app/skills/pr-review/SKILL.md" do |content|
+      metadata = RubyLLM::Skills::Parser.parse_string(content)
+      assert_equal "pr-review", metadata["name"]
+      assert_equal description, metadata["description"]
+      assert_equal license, metadata["license"]
+    end
+  end
+
+  test "names YAML reads as other types stay strings" do
+    %w[on 123 null true].each do |name|
+      run_generator [name]
+
+      skill = RubyLLM::Skills.load(Rails.root.join("tmp/generators/app/skills", name).to_s)
+      assert_equal name, skill.metadata["name"]
+      assert_predicate skill, :valid?
+    end
+  end
+
+  test "default description parses" do
+    run_generator ["pdf-report"]
+
+    skill = RubyLLM::Skills.load(Rails.root.join("tmp/generators/app/skills/pdf-report").to_s)
+    assert_equal "Description of what this skill does. Use when...", skill.description
+    assert_predicate skill, :valid?
   end
 
   test "SKILL.md contains skill title" do
@@ -36,7 +67,7 @@ class SkillGeneratorTest < Rails::Generators::TestCase
     run_generator ["my-skill", "-l", "MIT"]
 
     assert_file "app/skills/my-skill/SKILL.md" do |content|
-      assert_match(/^license: MIT$/, content)
+      assert_match(/^license: "MIT"$/, content)
     end
   end
 
@@ -82,7 +113,7 @@ class SkillGeneratorTest < Rails::Generators::TestCase
 
     assert_directory "app/skills/my-skill-name"
     assert_file "app/skills/my-skill-name/SKILL.md" do |content|
-      assert_match(/^name: my-skill-name$/, content)
+      assert_match(/^name: "my-skill-name"$/, content)
     end
   end
 
@@ -92,7 +123,7 @@ class SkillGeneratorTest < Rails::Generators::TestCase
     # CamelCase is converted to snake_case by Rails, then to kebab-case
     assert_directory "app/skills/my-skill-name"
     assert_file "app/skills/my-skill-name/SKILL.md" do |content|
-      assert_match(/^name: my-skill-name$/, content)
+      assert_match(/^name: "my-skill-name"$/, content)
     end
   end
 
@@ -100,8 +131,8 @@ class SkillGeneratorTest < Rails::Generators::TestCase
     run_generator ["test-skill", "-d", "Test description", "-l", "Apache-2.0"]
 
     assert_file "app/skills/test-skill/SKILL.md" do |content|
-      assert_match(/description: Test description/, content)
-      assert_match(/license: Apache-2.0/, content)
+      assert_match(/description: "Test description"/, content)
+      assert_match(/license: "Apache-2.0"/, content)
     end
   end
 end

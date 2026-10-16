@@ -3,6 +3,8 @@
 require "test_helper"
 require "ruby_llm/skills/skill_tool"
 require "ruby_llm/skills/composite_loader"
+require "json"
+require "tmpdir"
 
 class RubyLLM::Skills::TestSkillTool < Minitest::Test
   def setup
@@ -227,6 +229,71 @@ class RubyLLM::Skills::TestSkillTool < Minitest::Test
     assert_includes result, "Invalid resource path"
   end
 
+  def test_call_with_dot_dot_segment_anywhere_returns_error
+    with_skill("references/guide.md" => "Guide\n") do |tool, root|
+      File.write(File.join(File.dirname(root), "secret.txt"), "SECRET")
+
+      ["..", "../secret.txt", "references/../../secret.txt", "references/../references/guide.md", "references/.."].each do |path|
+        result = tool.call(command: "tmp-skill", resource: path)
+
+        assert_equal "Invalid resource path: #{path}", result
+      end
+    end
+  end
+
+  def test_call_with_consecutive_dots_in_a_filename_loads_resource
+    with_skill("references/v1..2.md" => "Changes in 1..2\n") do |tool|
+      result = tool.call(command: "tmp-skill", resource: "references/v1..2.md")
+
+      assert_includes result, "# Resource: references/v1..2.md"
+      assert_includes result, "Changes in 1..2"
+    end
+  end
+
+  def test_call_with_symlink_out_of_the_skill_returns_error
+    with_skill("references/guide.md" => "Guide\n") do |tool, root|
+      outside = File.join(File.dirname(root), "outside")
+      FileUtils.mkdir_p(outside)
+      File.write(File.join(outside, "secret.txt"), "SECRET")
+      File.symlink(File.join(outside, "secret.txt"), File.join(root, "references", "link.txt"))
+      File.symlink(outside, File.join(root, "assets"))
+
+      %w[references/link.txt assets/secret.txt].each do |path|
+        result = tool.call(command: "tmp-skill", resource: path)
+
+        assert_equal "Invalid resource path: #{path}", result
+      end
+    end
+  end
+
+  def test_call_with_symlink_inside_the_skill_loads_resource
+    with_skill("references/guide.md" => "Guide\n") do |tool, root|
+      File.symlink("guide.md", File.join(root, "references", "alias.md"))
+
+      assert_includes tool.call(command: "tmp-skill", resource: "references/alias.md"), "Guide"
+    end
+  end
+
+  def test_call_with_binary_resource_returns_message_instead_of_bytes
+    with_skill("assets/logo.png" => "\x89PNG\r\n\x1A\n\x00\xFF\xD8".b) do |tool|
+      result = tool.call(command: "tmp-skill", resource: "assets/logo.png")
+
+      assert_equal "Resource 'assets/logo.png' is not a text file and cannot be loaded as text", result
+      assert JSON.generate(result)
+    end
+  end
+
+  def test_call_with_utf8_resource_under_non_utf8_default_external
+    with_skill("references/menu.md" => "café ☕\n") do |tool|
+      result = with_default_external(Encoding::US_ASCII) do
+        tool.call(command: "tmp-skill", resource: "references/menu.md")
+      end
+
+      assert_predicate result, :valid_encoding?
+      assert_includes result, "café ☕"
+    end
+  end
+
   def test_call_with_resource_on_virtual_skill_returns_error
     require "ruby_llm/skills/database_loader"
 
@@ -267,6 +334,24 @@ class RubyLLM::Skills::TestSkillTool < Minitest::Test
     assert_includes result, "assets/template.txt"
   end
 
+  def test_skill_response_lists_nested_resources_by_loadable_path
+    files = {
+      "scripts/lib/util.rb" => "def util_method; end\n",
+      "references/guide.md" => "# Guide\n",
+      "references/api/guide.md" => "# API Guide\n",
+      "assets/img/readme.txt" => "Images\n"
+    }
+    with_skill(files) do |tool|
+      listed = tool.call(command: "tmp-skill").lines.map(&:chomp)
+
+      files.each_key { |path| assert_equal 1, listed.count("- #{path}"), "#{path} is not listed once" }
+      refute_includes listed, "- scripts/util.rb"
+
+      assert_includes tool.call(command: "tmp-skill", resource: "scripts/lib/util.rb"), "def util_method"
+      assert_includes tool.call(command: "tmp-skill", resource: "references/api/guide.md"), "# API Guide"
+    end
+  end
+
   # Arguments tests
 
   def test_parameters_include_optional_arguments
@@ -300,6 +385,36 @@ class RubyLLM::Skills::TestSkillTool < Minitest::Test
     description = @tool.description
 
     assert_includes description, "arguments"
+  end
+
+  private
+
+  def with_skill(files)
+    Dir.mktmpdir do |dir|
+      root = File.join(dir, "tmp-skill")
+      files = {"SKILL.md" => "---\nname: tmp-skill\ndescription: A temporary skill\n---\nBody\n"}.merge(files)
+      files.each do |relative, content|
+        path = File.join(root, relative)
+        FileUtils.mkdir_p(File.dirname(path))
+        File.binwrite(path, content)
+      end
+      yield RubyLLM::Skills::SkillTool.new(RubyLLM::Skills::FilesystemLoader.new(dir)), root
+    end
+  end
+
+  def with_default_external(encoding)
+    previous = Encoding.default_external
+    silence_warnings { Encoding.default_external = encoding }
+    yield
+  ensure
+    silence_warnings { Encoding.default_external = previous }
+  end
+
+  def silence_warnings
+    verbose, $VERBOSE = $VERBOSE, nil
+    yield
+  ensure
+    $VERBOSE = verbose
   end
 
   # Mock classes for testing

@@ -1,13 +1,18 @@
 # frozen_string_literal: true
 
+# Under Rails the tasks load the environment first, so the default path is
+# the application's. Rails defines :environment only after the railties'
+# tasks are loaded, so the application is checked as well.
 namespace :skills do
+  prerequisites = (Rake::Task.task_defined?(:environment) || (defined?(Rails) && Rails.respond_to?(:application) && Rails.application)) ? [:environment] : []
+
   desc "List all available skills"
-  task list: :environment do
-    loader = RubyLlm::Skills.from_directory
+  task list: prerequisites do
+    loader = RubyLLM::Skills.from_directory
     skills = loader.list
 
     if skills.empty?
-      puts "No skills found in #{RubyLlm::Skills.default_path}"
+      puts "No skills found in #{RubyLLM::Skills.default_path}"
       next
     end
 
@@ -23,12 +28,12 @@ namespace :skills do
   end
 
   desc "Validate all skills"
-  task validate: :environment do
-    loader = RubyLlm::Skills.from_directory
+  task validate: prerequisites do
+    loader = RubyLLM::Skills.from_directory
     skills = loader.list
 
     if skills.empty?
-      puts "No skills found in #{RubyLlm::Skills.default_path}"
+      puts "No skills found in #{RubyLLM::Skills.default_path}"
       next
     end
 
@@ -55,14 +60,14 @@ namespace :skills do
   end
 
   desc "Show details of a specific skill"
-  task :show, [:name] => :environment do |_, args|
+  task :show, [:name] => prerequisites do |_, args|
     name = args[:name]
     unless name
       puts "Usage: rake skills:show[skill-name]"
       exit(1)
     end
 
-    loader = RubyLlm::Skills.from_directory
+    loader = RubyLLM::Skills.from_directory
     skill = loader.find(name)
 
     unless skill
@@ -92,19 +97,19 @@ namespace :skills do
     if skill.scripts.any?
       puts ""
       puts "Scripts:"
-      skill.scripts.each { |s| puts "  - #{File.basename(s)}" }
+      skill.scripts.each { |s| puts "  - #{s.delete_prefix("#{skill.path}/")}" }
     end
 
     if skill.references.any?
       puts ""
       puts "References:"
-      skill.references.each { |r| puts "  - #{File.basename(r)}" }
+      skill.references.each { |r| puts "  - #{r.delete_prefix("#{skill.path}/")}" }
     end
 
     if skill.assets.any?
       puts ""
       puts "Assets:"
-      skill.assets.each { |a| puts "  - #{File.basename(a)}" }
+      skill.assets.each { |a| puts "  - #{a.delete_prefix("#{skill.path}/")}" }
     end
   end
 end

@@ -2,7 +2,6 @@
 
 require "json"
 require "yaml"
-require "pathname"
 
 module RubyLLM
   module Skills
@@ -293,7 +292,7 @@ module RubyLLM
 
               tree_path = "skills/#{skill.name}/#{rel}"
               text = text!(@tree.fetch(tree_path), tree_path)
-              rewritten = text.gsub(ROOT_REFERENCE) { relocate(skill, rel, Regexp.last_match(1)) || Regexp.last_match(0) }
+              rewritten = text.gsub(ROOT_REFERENCE) { relocate(skill, Regexp.last_match(1)) || Regexp.last_match(0) }
               rewritten = rewritten.gsub(RELATIVE_REFERENCE) { relocate_relative(skill, rel, Regexp.last_match(1)) || Regexp.last_match(0) }
               @tree[tree_path] = rewritten if rewritten != text
             end
@@ -307,12 +306,13 @@ module RubyLLM
           target = File.expand_path(reference, "/#{source_dir}").delete_prefix("/")
           return nil if target.empty? || target == skill.path || target.start_with?("#{skill.path}/") || target.start_with?("../")
 
-          relocate(skill, rel, target)
+          relocate(skill, target)
         end
 
         # Copies +plugin_path+ (a file, or every file under it) into the skill's
-        # support root; returns the rewritten reference relative to +rel+'s directory.
-        def relocate(skill, rel, plugin_path)
+        # support root; returns the rewritten reference relative to the skill
+        # root, which is how the skill tool resolves resources in every file.
+        def relocate(skill, plugin_path)
           trimmed = plugin_path.sub(/[.,;:)\]'"`]+\z/, "")
           trailing = plugin_path[trimmed.length..]
           segments = trimmed.split("/")
@@ -328,9 +328,7 @@ module RubyLLM
             @consumed << path
           end
           rest = trimmed.delete_prefix(matched)
-          from = File.dirname(rel)
-          relative = Pathname.new("#{SUPPORT_ROOT}/#{matched}").relative_path_from(Pathname.new((from == ".") ? "" : from).cleanpath).to_s
-          "#{relative}#{rest}#{trailing}"
+          "#{SUPPORT_ROOT}/#{matched}#{rest}#{trailing}"
         end
 
         # --- frontmatter ---------------------------------------------------------
@@ -344,7 +342,7 @@ module RubyLLM
 
         # [hash, body] when the text opens with a frontmatter block, else [nil, text].
         def split_frontmatter(text)
-          return [nil, text] unless text.match?(Parser::FRONTMATTER_REGEX)
+          return [nil, text] unless Parser.frontmatter?(text)
 
           data = Parser.parse_string(text)
           return [nil, text] unless data.is_a?(Hash)

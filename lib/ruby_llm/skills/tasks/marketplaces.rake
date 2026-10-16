@@ -13,10 +13,11 @@
 #   rake skills:marketplaces:remove[compound-writing]
 #
 # Under Rails the tasks load the environment first, so the root and lockfile
-# resolve against Rails.root.
+# resolve against Rails.root. Rails defines :environment only after the
+# railties' tasks are loaded, so the application is checked as well.
 namespace :skills do
   namespace :marketplaces do
-    prerequisites = Rake::Task.task_defined?(:environment) ? [:environment] : []
+    prerequisites = (Rake::Task.task_defined?(:environment) || (defined?(Rails) && Rails.respond_to?(:application) && Rails.application)) ? [:environment] : []
 
     registry = -> { RubyLLM::Skills.marketplaces }
 
