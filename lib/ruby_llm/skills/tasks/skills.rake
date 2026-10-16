@@ -3,11 +3,11 @@
 namespace :skills do
   desc "List all available skills"
   task list: :environment do
-    loader = RubyLlm::Skills.from_directory
+    loader = RubyLLM::Skills.from_directory
     skills = loader.list
 
     if skills.empty?
-      puts "No skills found in #{RubyLlm::Skills.default_path}"
+      puts "No skills found in #{RubyLLM::Skills.default_path}"
       next
     end
 
@@ -24,11 +24,11 @@ namespace :skills do
 
   desc "Validate all skills"
   task validate: :environment do
-    loader = RubyLlm::Skills.from_directory
+    loader = RubyLLM::Skills.from_directory
     skills = loader.list
 
     if skills.empty?
-      puts "No skills found in #{RubyLlm::Skills.default_path}"
+      puts "No skills found in #{RubyLLM::Skills.default_path}"
       next
     end
 
@@ -62,7 +62,7 @@ namespace :skills do
       exit(1)
     end
 
-    loader = RubyLlm::Skills.from_directory
+    loader = RubyLLM::Skills.from_directory
     skill = loader.find(name)
 
     unless skill
