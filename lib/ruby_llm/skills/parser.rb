@@ -79,12 +79,15 @@ module RubyLLM
 
         def parse_yaml(yaml_content)
           # Use safe_load with permitted classes for security
-          YAML.safe_load(
+          metadata = YAML.safe_load(
             yaml_content,
             permitted_classes: [Symbol],
             permitted_symbols: [],
             aliases: false
           ) || {}
+          raise ParseError, "YAML frontmatter must be a mapping, got #{metadata.class}" unless metadata.is_a?(Hash)
+
+          metadata
         rescue Psych::SyntaxError => e
           raise ParseError, "Invalid YAML frontmatter: #{e.message}"
         rescue Psych::DisallowedClass => e

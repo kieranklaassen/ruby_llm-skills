@@ -123,6 +123,15 @@ class RubyLLM::Skills::TestParser < Minitest::Test
     assert_equal "bom-skill", RubyLLM::Skills::Parser.parse_string(content.b)["name"]
   end
 
+  def test_rejects_frontmatter_that_is_not_a_mapping
+    ["- name: listed\n- description: A list", "just a sentence", "42"].each do |yaml|
+      error = assert_raises(RubyLLM::Skills::ParseError) do
+        RubyLLM::Skills::Parser.parse_string("---\n#{yaml}\n---\nBody\n")
+      end
+      assert_match(/must be a mapping/, error.message)
+    end
+  end
+
   def test_parses_trailing_spaces_after_the_fences
     content = "--- \nname: spaced\ndescription: Fences with trailing spaces\n---\t \n# Heading\n"
 
