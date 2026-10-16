@@ -68,6 +68,21 @@ class RubyLLM::Skills::TestRakeTasks < Minitest::Test
     end
   end
 
+  def test_tasks_run_without_an_environment_task
+    Rake.application = Rake::Application.new
+    load File.expand_path("../../../lib/ruby_llm/skills/tasks.rb", __dir__)
+
+    refute Rake::Task.task_defined?(:environment)
+    assert_includes run_task("skills:list"), "✓ valid-skill"
+    assert_includes run_task("skills:show", "valid-skill"), "Name: valid-skill"
+  end
+
+  def test_tasks_load_the_environment_when_there_is_one
+    %w[skills:list skills:validate skills:show].each do |name|
+      assert_equal ["environment"], Rake::Task[name].prerequisites
+    end
+  end
+
   private
 
   def run_task(name, *args)
