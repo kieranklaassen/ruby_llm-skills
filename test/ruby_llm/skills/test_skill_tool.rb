@@ -3,6 +3,8 @@
 require "test_helper"
 require "ruby_llm/skills/skill_tool"
 require "ruby_llm/skills/composite_loader"
+require "json"
+require "tmpdir"
 
 class RubyLLM::Skills::TestSkillTool < Minitest::Test
   def setup
@@ -227,6 +229,26 @@ class RubyLLM::Skills::TestSkillTool < Minitest::Test
     assert_includes result, "Invalid resource path"
   end
 
+  def test_call_with_binary_resource_returns_message_instead_of_bytes
+    with_skill("assets/logo.png" => "\x89PNG\r\n\x1A\n\x00\xFF\xD8".b) do |tool|
+      result = tool.call(command: "tmp-skill", resource: "assets/logo.png")
+
+      assert_equal "Resource 'assets/logo.png' is not a text file and cannot be loaded as text", result
+      assert JSON.generate(result)
+    end
+  end
+
+  def test_call_with_utf8_resource_under_non_utf8_default_external
+    with_skill("references/menu.md" => "café ☕\n") do |tool|
+      result = with_default_external(Encoding::US_ASCII) do
+        tool.call(command: "tmp-skill", resource: "references/menu.md")
+      end
+
+      assert_predicate result, :valid_encoding?
+      assert_includes result, "café ☕"
+    end
+  end
+
   def test_call_with_resource_on_virtual_skill_returns_error
     require "ruby_llm/skills/database_loader"
 
@@ -300,6 +322,36 @@ class RubyLLM::Skills::TestSkillTool < Minitest::Test
     description = @tool.description
 
     assert_includes description, "arguments"
+  end
+
+  private
+
+  def with_skill(files)
+    Dir.mktmpdir do |dir|
+      root = File.join(dir, "tmp-skill")
+      files = {"SKILL.md" => "---\nname: tmp-skill\ndescription: A temporary skill\n---\nBody\n"}.merge(files)
+      files.each do |relative, content|
+        path = File.join(root, relative)
+        FileUtils.mkdir_p(File.dirname(path))
+        File.binwrite(path, content)
+      end
+      yield RubyLLM::Skills::SkillTool.new(RubyLLM::Skills::FilesystemLoader.new(dir)), root
+    end
+  end
+
+  def with_default_external(encoding)
+    previous = Encoding.default_external
+    silence_warnings { Encoding.default_external = encoding }
+    yield
+  ensure
+    silence_warnings { Encoding.default_external = previous }
+  end
+
+  def silence_warnings
+    verbose, $VERBOSE = $VERBOSE, nil
+    yield
+  ensure
+    $VERBOSE = verbose
   end
 
   # Mock classes for testing

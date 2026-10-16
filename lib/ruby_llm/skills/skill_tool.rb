@@ -193,7 +193,11 @@ module RubyLLM
           return "Resource '#{resource_path}' is not a file"
         end
 
-        content = File.read(full_path)
+        content = File.read(full_path, encoding: Encoding::UTF_8)
+        unless content.valid_encoding? && !content.include?("\0")
+          return "Resource '#{resource_path}' is not a text file and cannot be loaded as text"
+        end
+
         "# Resource: #{resource_path}\n\n#{content}"
       end
 
