@@ -137,19 +137,19 @@ module RubyLLM
 
         if skill.scripts.any?
           parts << "## Available Scripts"
-          skill.scripts.each { |s| parts << "- scripts/#{File.basename(s)}" }
+          skill.scripts.each { |s| parts << "- #{relative_path(skill, s)}" }
           parts << ""
         end
 
         if skill.references.any?
           parts << "## Available References"
-          skill.references.each { |r| parts << "- references/#{File.basename(r)}" }
+          skill.references.each { |r| parts << "- #{relative_path(skill, r)}" }
           parts << ""
         end
 
         if skill.assets.any?
           parts << "## Available Assets"
-          skill.assets.each { |a| parts << "- assets/#{File.basename(a)}" }
+          skill.assets.each { |a| parts << "- #{relative_path(skill, a)}" }
           parts << ""
         end
 
@@ -205,7 +205,11 @@ module RubyLLM
         resources = skill.scripts + skill.references + skill.assets
         return "none" if resources.empty?
 
-        resources.map { |r| r.sub("#{skill.path}/", "") }.join(", ")
+        resources.map { |r| relative_path(skill, r) }.join(", ")
+      end
+
+      def relative_path(skill, file)
+        file.delete_prefix("#{skill.path}/")
       end
     end
   end

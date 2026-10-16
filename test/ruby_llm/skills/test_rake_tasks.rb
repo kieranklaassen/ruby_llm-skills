@@ -2,6 +2,7 @@
 
 require "test_helper"
 require "rake"
+require "tmpdir"
 
 class RubyLLM::Skills::TestRakeTasks < Minitest::Test
   def setup
@@ -45,6 +46,26 @@ class RubyLLM::Skills::TestRakeTasks < Minitest::Test
     assert_includes out, "Name: with-all-resources"
     assert_includes out, "Path: #{skill_fixture_path("with-all-resources")}"
     assert_includes out, "Scripts:"
+    assert_includes out, "  - scripts/main.rb"
+    assert_includes out, "  - references/guide.md"
+    assert_includes out, "  - assets/template.txt"
+  end
+
+  def test_show_lists_nested_resources_by_relative_path
+    Dir.mktmpdir do |dir|
+      {"SKILL.md" => "---\nname: nested\ndescription: Nested resources\n---\nBody\n",
+       "scripts/lib/util.rb" => "", "references/guide.md" => "", "references/api/guide.md" => ""}.each do |path, content|
+        FileUtils.mkdir_p(File.dirname(File.join(dir, "nested", path)))
+        File.write(File.join(dir, "nested", path), content)
+      end
+      RubyLLM::Skills.default_path = dir
+
+      listed = run_task("skills:show", "nested").lines.map(&:chomp)
+
+      assert_includes listed, "  - scripts/lib/util.rb"
+      assert_includes listed, "  - references/api/guide.md"
+      assert_equal 1, listed.count("  - references/guide.md")
+    end
   end
 
   private

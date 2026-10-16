@@ -92,19 +92,19 @@ namespace :skills do
     if skill.scripts.any?
       puts ""
       puts "Scripts:"
-      skill.scripts.each { |s| puts "  - #{File.basename(s)}" }
+      skill.scripts.each { |s| puts "  - #{s.delete_prefix("#{skill.path}/")}" }
     end
 
     if skill.references.any?
       puts ""
       puts "References:"
-      skill.references.each { |r| puts "  - #{File.basename(r)}" }
+      skill.references.each { |r| puts "  - #{r.delete_prefix("#{skill.path}/")}" }
     end
 
     if skill.assets.any?
       puts ""
       puts "Assets:"
-      skill.assets.each { |a| puts "  - #{File.basename(a)}" }
+      skill.assets.each { |a| puts "  - #{a.delete_prefix("#{skill.path}/")}" }
     end
   end
 end

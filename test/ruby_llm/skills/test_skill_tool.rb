@@ -289,6 +289,24 @@ class RubyLLM::Skills::TestSkillTool < Minitest::Test
     assert_includes result, "assets/template.txt"
   end
 
+  def test_skill_response_lists_nested_resources_by_loadable_path
+    files = {
+      "scripts/lib/util.rb" => "def util_method; end\n",
+      "references/guide.md" => "# Guide\n",
+      "references/api/guide.md" => "# API Guide\n",
+      "assets/img/readme.txt" => "Images\n"
+    }
+    with_skill(files) do |tool|
+      listed = tool.call(command: "tmp-skill").lines.map(&:chomp)
+
+      files.each_key { |path| assert_equal 1, listed.count("- #{path}"), "#{path} is not listed once" }
+      refute_includes listed, "- scripts/util.rb"
+
+      assert_includes tool.call(command: "tmp-skill", resource: "scripts/lib/util.rb"), "def util_method"
+      assert_includes tool.call(command: "tmp-skill", resource: "references/api/guide.md"), "# API Guide"
+    end
+  end
+
   # Arguments tests
 
   def test_parameters_include_optional_arguments
