@@ -1,8 +1,8 @@
 ---
 name: <%= skill_name %>
-description: <%= skill_description %>
+description: <%= JSON.generate(skill_description) %>
 <% if skill_license -%>
-license: <%= skill_license %>
+license: <%= JSON.generate(skill_license) %>
 <% end -%>
 ---
 
