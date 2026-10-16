@@ -66,6 +66,23 @@ class RubyLLM::Skills::Marketplace::TestBundle < Minitest::Test
     assert_equal [{"skill" => "draft", "reference" => "missing/nothing.md"}], bundle.unresolved_references
   end
 
+  def test_references_from_nested_files_are_rewritten_to_paths_the_skill_tool_serves
+    files = {
+      "skills/review/SKILL.md" => "---\nname: review\ndescription: Review code.\n---\nRead `references/checklist.md`.\n",
+      "skills/review/references/checklist.md" => "Read `../../../references/style.md` and `${CLAUDE_PLUGIN_ROOT}/defaults/tone.md`.\n",
+      "references/style.md" => "STYLE GUIDE\n",
+      "defaults/tone.md" => "TONE\n"
+    }
+    plugin = Bundle.new(files, plugin_name: "demo")
+    assert_equal "Read `.plugin/references/style.md` and `.plugin/defaults/tone.md`.\n", plugin.tree.fetch("skills/review/references/checklist.md")
+    assert_equal [], plugin.unresolved_references
+
+    plugin.write!(@tmpdir)
+    tool = RubyLLM::Skills::SkillTool.new(RubyLLM::Skills.from_directory(File.join(@tmpdir, "skills")))
+    assert_includes tool.execute(command: "review", resource: ".plugin/references/style.md"), "STYLE GUIDE"
+    assert_includes tool.execute(command: "review", resource: ".plugin/defaults/tone.md"), "TONE"
+  end
+
   def test_everything_else_is_dropped
     dropped = bundle.dropped
     assert_includes dropped, "hooks/hooks.json"

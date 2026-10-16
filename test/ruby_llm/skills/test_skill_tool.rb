@@ -229,6 +229,51 @@ class RubyLLM::Skills::TestSkillTool < Minitest::Test
     assert_includes result, "Invalid resource path"
   end
 
+  def test_call_with_dot_dot_segment_anywhere_returns_error
+    with_skill("references/guide.md" => "Guide\n") do |tool, root|
+      File.write(File.join(File.dirname(root), "secret.txt"), "SECRET")
+
+      ["..", "../secret.txt", "references/../../secret.txt", "references/../references/guide.md", "references/.."].each do |path|
+        result = tool.call(command: "tmp-skill", resource: path)
+
+        assert_equal "Invalid resource path: #{path}", result
+      end
+    end
+  end
+
+  def test_call_with_consecutive_dots_in_a_filename_loads_resource
+    with_skill("references/v1..2.md" => "Changes in 1..2\n") do |tool|
+      result = tool.call(command: "tmp-skill", resource: "references/v1..2.md")
+
+      assert_includes result, "# Resource: references/v1..2.md"
+      assert_includes result, "Changes in 1..2"
+    end
+  end
+
+  def test_call_with_symlink_out_of_the_skill_returns_error
+    with_skill("references/guide.md" => "Guide\n") do |tool, root|
+      outside = File.join(File.dirname(root), "outside")
+      FileUtils.mkdir_p(outside)
+      File.write(File.join(outside, "secret.txt"), "SECRET")
+      File.symlink(File.join(outside, "secret.txt"), File.join(root, "references", "link.txt"))
+      File.symlink(outside, File.join(root, "assets"))
+
+      %w[references/link.txt assets/secret.txt].each do |path|
+        result = tool.call(command: "tmp-skill", resource: path)
+
+        assert_equal "Invalid resource path: #{path}", result
+      end
+    end
+  end
+
+  def test_call_with_symlink_inside_the_skill_loads_resource
+    with_skill("references/guide.md" => "Guide\n") do |tool, root|
+      File.symlink("guide.md", File.join(root, "references", "alias.md"))
+
+      assert_includes tool.call(command: "tmp-skill", resource: "references/alias.md"), "Guide"
+    end
+  end
+
   def test_call_with_binary_resource_returns_message_instead_of_bytes
     with_skill("assets/logo.png" => "\x89PNG\r\n\x1A\n\x00\xFF\xD8".b) do |tool|
       result = tool.call(command: "tmp-skill", resource: "assets/logo.png")

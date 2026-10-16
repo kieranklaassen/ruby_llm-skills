@@ -178,7 +178,7 @@ module RubyLLM
         return "Cannot load resources from virtual skills" if skill.virtual?
 
         # Prevent path traversal
-        if resource_path.include?("..") || resource_path.start_with?("/")
+        if resource_path.split("/").include?("..") || resource_path.start_with?("/")
           return "Invalid resource path: #{resource_path}"
         end
 
@@ -187,6 +187,11 @@ module RubyLLM
         unless File.exist?(full_path)
           available = list_available_resources(skill)
           return "Resource '#{resource_path}' not found in skill '#{skill.name}'. Available: #{available}"
+        end
+
+        # A symlink may point outside the skill folder
+        unless File.realpath(full_path).start_with?("#{File.realpath(skill.path)}/")
+          return "Invalid resource path: #{resource_path}"
         end
 
         unless File.file?(full_path)
