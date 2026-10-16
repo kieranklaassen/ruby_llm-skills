@@ -344,7 +344,7 @@ module RubyLLM
 
         # [hash, body] when the text opens with a frontmatter block, else [nil, text].
         def split_frontmatter(text)
-          return [nil, text] unless text.match?(Parser::FRONTMATTER_REGEX)
+          return [nil, text] unless Parser.frontmatter?(text)
 
           data = Parser.parse_string(text)
           return [nil, text] unless data.is_a?(Hash)

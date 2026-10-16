@@ -142,6 +142,17 @@ class RubyLLM::Skills::Marketplace::TestBundle < Minitest::Test
     assert_includes plugin.dropped, "commands/ignored.md"
   end
 
+  def test_crlf_and_byte_order_mark_files_are_accepted
+    files = {
+      "skills/windows/SKILL.md" => "\uFEFF---\r\nname: windows\r\ndescription: Saved with CRLF and a BOM.\r\n---\r\n# Windows\r\n",
+      "commands/go.md" => "---\r\ndescription: A CRLF command.\r\n---\r\nGo.\r\n"
+    }
+    plugin = Bundle.new(files, plugin_name: "p")
+    assert_equal %w[windows go], plugin.skill_names
+    assert_equal [], plugin.unsupported
+    assert_equal "---\ndescription: A CRLF command.\nname: go\n---\nGo.", plugin.tree.fetch("skills/go.md")
+  end
+
   def test_frontmatter_name_must_match_the_directory
     files = plugin_fixture_files("broken", "mismatch")
     error = assert_raises(InvalidPluginError) { Bundle.new(files, plugin_name: "mismatch") }
